@@ -1,10 +1,11 @@
-import { AnyAbility, PureAbility } from '@casl/ability';
+import { PureAbility } from '@casl/ability';
 import { DynamicModule, Module, Type } from '@nestjs/common';
 
-import { CaslAbilityFactory } from './casl-ability.factory';
+import { CaslAbilityAugmenter, CaslAbilityFactory } from './casl-ability.factory';
 import { PoliciesGuard } from './policies.guard';
+import { AnyAbilityLike } from './types';
 
-export interface ICaslRootConfig<TAbility extends AnyAbility = PureAbility> {
+export interface ICaslRootConfig<TAbility extends AnyAbilityLike = PureAbility<any, any>> {
 	abilityFactory: Type<CaslAbilityFactory<TAbility>>;
 }
 
@@ -26,6 +27,18 @@ export class CaslModule {
 			exports: [
 				CaslAbilityFactory,
 				PoliciesGuard,
+			],
+		};
+	}
+
+	/**
+	 * @param augmenter
+	 */
+	public static withAugmenter( augmenter: Type<CaslAbilityAugmenter<any>> ): DynamicModule {
+		return {
+			module: CaslModule,
+			providers: [
+				{ provide: CaslAbilityAugmenter, useClass: augmenter },
 			],
 		};
 	}

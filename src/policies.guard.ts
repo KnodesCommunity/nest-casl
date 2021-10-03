@@ -1,20 +1,21 @@
 // From https://docs.nestjs.com/security/authorization
-import { AnyAbility, PureAbility } from '@casl/ability';
-import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common';
+import { PureAbility } from '@casl/ability';
+import { CanActivate, ExecutionContext, ForbiddenException, Inject, Injectable, Optional } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 
-import { CaslAbilityFactory } from './casl-ability.factory';
-import { CHECK_POLICIES_KEY, PolicyMetadataDescriptor } from './decorator-key';
-import { PolicyDescriptor, PolicyDescriptorMask } from './types';
+import { CaslAbilityAugmenter, CaslAbilityFactory } from './casl-ability.factory';
+import { CHECK_POLICIES_KEY, PolicyMetadataDescriptor } from './decorators/policies-key';
+import { AnyAbilityLike, PolicyDescriptor, PolicyDescriptorMask } from './types';
 
 const isNotNil = <T>( v: T | null | undefined ): v is T => v !== null && v !== undefined;
 
 @Injectable()
-export class PoliciesGuard<TAbility extends AnyAbility = PureAbility> implements CanActivate {
+export class PoliciesGuard<TAbility extends AnyAbilityLike = PureAbility<any, any>> implements CanActivate {
 	public constructor(
 		private readonly reflector: Reflector,
 		@Inject( CaslAbilityFactory ) private readonly caslAbilityFactory: CaslAbilityFactory<TAbility>,
+		@Optional() @Inject( CaslAbilityAugmenter ) private readonly augmenter: CaslAbilityAugmenter<any>,
 	) {}
 
 	/**
@@ -32,11 +33,15 @@ export class PoliciesGuard<TAbility extends AnyAbility = PureAbility> implements
 		];
 
 		const request = context.switchToHttp().getRequest();
-		// eslint-disable-next-line no-console
-		console.log( { policies } );
 		const ability = this.caslAbilityFactory.createFromRequest( request );
+		( request as any ).ability = ability;
 
-		return policies.every( policy => this.execPolicyHandler( policy, ability ) );
+		this.augmenter?.augment( ability, context );
+		if( !policies.every( policy => this.execPolicyHandler( policy, ability ) ) ){
+			throw new ForbiddenException( 'Invalid authorizations' );
+		} else {
+			return true;
+		}
 	}
 
 	/**
