@@ -1,6 +1,10 @@
+const { resolve } = require( 'path' );
+
 module.exports = {
+	root: true,
 	extends: '@scitizen/eslint-config/nest',
 	parserOptions: {
-		project: [ 'tsconfig.json', 'tsconfig.spec.json', 'tsconfig.spec.e2e.json' ],
+		project: [ './tsconfig.build.json', './tsconfig.spec.json', './tsconfig.e2e-spec.json' ]
+			.map( tsconfig => resolve( __dirname, tsconfig ) ),
 	},
 };

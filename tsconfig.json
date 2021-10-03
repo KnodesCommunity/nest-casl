@@ -1,8 +1,10 @@
 {
-  "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "baseUrl": "./"
-  },
-  "exclude": ["**/*.spec.ts"],
+    "compilerOptions": {
+        "composite": true,
+    },
+    "references": [
+        {"path": "./tsconfig.build.json"},
+        {"path": "./tsconfig.spec.json"},
+        {"path": "./tsconfig.e2e-spec.json"},
+    ]
 }

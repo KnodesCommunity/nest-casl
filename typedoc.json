@@ -1,0 +1,29 @@
+{
+    "entryPoints": ["src/index.ts"],
+    "out": "docs",
+    "includes": "./docs-source",
+    "theme": "pages-plugin",
+    "tsconfig": "tsconfig.build.json",
+    "listInvalidSymbolLinks": true,
+    "plugin": ["typedoc-plugin-pages", "./docs-source/plugin"],
+    "codeBlocksDirectories": {
+        "test": "./test/demo"
+    },
+    "pages": {
+        "groups": [
+            {
+                "title": "Guides",
+                "pages": [
+                    {
+                        "title": "Getting started",
+                        "source": "./docs-source/guide/getting-started.md"
+                    },
+                    {
+                        "title": "Use everywhere",
+                        "source": "./docs-source/guide/use-everywhere.md"
+                    }
+                ]
+            }
+        ]
+    }
+}

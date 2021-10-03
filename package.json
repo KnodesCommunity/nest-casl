@@ -12,11 +12,12 @@
     "prebuild": "rimraf dist",
     "build": "nest build",
     "build:watch": "npm run build -- --watch",
+    "doc": "typedoc",
     "format:pkg": "format-package --write",
     "lint": "eslint \"{,{src,libs,test}/**/}*.{j,t}s\"",
     "lint:commit-message:current": "commitlint -E HUSKY_GIT_PARAMS",
     "lint:fix": "npm run lint -- --fix",
-    "precommit": "npm run lint && npm run test && npm run test:e2e && npm run build",
+    "precommit": "npm run lint && npm run test && npm run test:e2e && npm run build && npm run doc",
     "prepare": "husky install",
     "postinstall": "npm run postinstall:jest-extended",
     "postinstall:jest-extended": "cd node_modules/jest-extended && npm i --production --ignore-scripts",
@@ -79,6 +80,8 @@
     "ts-node": "^10.2.1",
     "tsconfig-paths": "^3.11.0",
     "tslint": "^6.1.3",
+    "typedoc": "^0.21.9",
+    "typedoc-plugin-pages": "^1.1.0",
     "typescript": "^4.4.3"
   }
 }

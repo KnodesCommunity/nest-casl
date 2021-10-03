@@ -1,12 +1,14 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "./",
     "types": [
       "jest",
       "jest-extended"
-    ]
+    ],
+    "paths": {
+        "@scitizen/nest-casl": ["./src/index.ts"]
+    }
   },
   "include": ["./src/**/*"],
-  "exclude": []
+  "exclude": ["node_modules", "test", "dist"]
 }

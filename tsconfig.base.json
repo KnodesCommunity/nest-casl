@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "target": "ESNext",
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "incremental": true,
+    "moduleResolution": "node",
+    "composite": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "rootDir": "./"
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["**/*.spec.ts"]
+}
