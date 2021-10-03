@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "./",
+    "types": [
+      "jest",
+      "jest-extended"
+    ]
+  },
+  "include": ["./src/**/*"],
+  "exclude": []
+}
