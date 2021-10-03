@@ -1,10 +1,10 @@
 // From https://docs.nestjs.com/security/authorization
 import { PureAbility } from '@casl/ability';
-import { CanActivate, ExecutionContext, ForbiddenException, Inject, Injectable, Optional } from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 
-import { CaslAbilityAugmenter, CaslAbilityFactory } from './casl-ability.factory';
+import { CaslAbilityFactory } from './casl-ability.factory';
 import { CHECK_POLICIES_KEY } from './policies-key';
 import { AnyAbilityLike, PolicyDescriptor } from './types';
 
@@ -13,7 +13,6 @@ export class PoliciesGuard<TAbility extends AnyAbilityLike = PureAbility<any, an
 	public constructor(
 		private readonly reflector: Reflector,
 		@Inject( CaslAbilityFactory ) private readonly caslAbilityFactory: CaslAbilityFactory<TAbility>,
-		@Optional() @Inject( CaslAbilityAugmenter ) private readonly augmenter: CaslAbilityAugmenter<any>,
 	) {}
 
 	/**
@@ -34,7 +33,6 @@ export class PoliciesGuard<TAbility extends AnyAbilityLike = PureAbility<any, an
 		const ability = this.caslAbilityFactory.createFromRequest( request );
 		( request as any ).ability = ability;
 
-		this.augmenter?.augment( ability, context );
 		if( !policies.every( policy => this._execPolicyHandler( policy, ability ) ) ){
 			throw new ForbiddenException( 'Invalid authorizations' );
 		} else {

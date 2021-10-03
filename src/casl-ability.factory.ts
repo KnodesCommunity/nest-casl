@@ -1,6 +1,5 @@
 // From https://docs.nestjs.com/security/authorization
 import { PureAbility } from '@casl/ability';
-import { ExecutionContext } from '@nestjs/common';
 
 import { AnyAbilityLike } from './types';
 
@@ -13,9 +12,4 @@ export interface CaslAbilityFactory<TAbility extends AnyAbilityLike = PureAbilit
 	 * @returns the ability for the user.
 	 */
 	createFromRequest( request: unknown ): TAbility;
-}
-
-export const CaslAbilityAugmenter = Symbol( 'CaslAbilityFactoryAugmenter' );
-export interface CaslAbilityAugmenter<TAbility extends AnyAbilityLike> {
-	augment( ability: TAbility, context: ExecutionContext ): void;
 }

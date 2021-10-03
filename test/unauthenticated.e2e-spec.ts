@@ -66,7 +66,7 @@ describe( 'Unauthenticated using guard', () => {
 
 		beforeAll( async () => {
 			const moduleRef = await Test.createTestingModule( {
-				imports: [ CaslModule.forRoot( { abilityFactory: TestAbilityFactory } ) ],
+				imports: [ CaslModule.withConfig( { abilityFactory: TestAbilityFactory } ) ],
 				controllers: [
 					GlobalPolicyController, MethodPolicyController, PoliciesMaskController,
 				],
@@ -147,7 +147,7 @@ describe( 'Unauthenticated using guard', () => {
 
 		beforeAll( async () => {
 			const moduleRef = await Test.createTestingModule( {
-				imports: [ CaslModule.forRoot( { abilityFactory: TestAbilityFactory } ) ],
+				imports: [ CaslModule.withConfig( { abilityFactory: TestAbilityFactory } ) ],
 				controllers: [
 					GlobalPolicyController, MethodPolicyController, PoliciesMaskController,
 				],
