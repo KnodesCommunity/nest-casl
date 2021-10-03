@@ -5,7 +5,7 @@ import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 
 import { CaslAbilityAugmenter, CaslAbilityFactory } from './casl-ability.factory';
-import { CHECK_POLICIES_KEY, PolicyMetadataDescriptor } from './decorators/policies-key';
+import { CHECK_POLICIES_KEY, PolicyMetadataDescriptor } from './policies-key';
 import { AnyAbilityLike, PolicyDescriptor, PolicyDescriptorMask } from './types';
 
 const isNotNil = <T>( v: T | null | undefined ): v is T => v !== null && v !== undefined;

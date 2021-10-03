@@ -1,18 +1,18 @@
 import { Ability } from '@casl/ability';
-import { CanActivate, Controller, Get, HttpStatus, INestApplication, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, Controller, Get, HttpStatus, INestApplication, Injectable } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 
 import { CaslAbilityFactory, CaslModule, PoliciesMask, Policy, bindPolicy } from '../src';
 
 class TestAbilityFactory implements CaslAbilityFactory {
-	public readonly createFromRequest = jest.fn().mockReturnValue( new Ability() );
+	public readonly createFromRequest = () => new Ability();
 }
 
 @Injectable()
 class TestGuard implements CanActivate {
 	public canActivate(): boolean {
-		throw new UnauthorizedException();
+		return false;
 	}
 }
 
@@ -70,6 +70,7 @@ describe( 'Unauthenticated using guard', () => {
 				controllers: [
 					UnauthInfixGlobalPolicy, UnauthInfixMethodPolicy, UnauthInfixPoliciesMask,
 				],
+				providers: [ TestGuard ],
 			} ).compile();
 
 			app = moduleRef.createNestApplication();
@@ -150,6 +151,7 @@ describe( 'Unauthenticated using guard', () => {
 				controllers: [
 					UnauthPrefixGlobalPolicy, UnauthPrefixMethodPolicy, UnauthPrefixPoliciesMask,
 				],
+				providers: [ TestGuard ],
 			} ).compile();
 
 			app = moduleRef.createNestApplication();

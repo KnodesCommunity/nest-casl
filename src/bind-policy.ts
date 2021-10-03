@@ -1,6 +1,5 @@
-import { GuardsList } from '../types';
-import { PoliciesMask } from './policies-mask.class.decorator';
-import { Policy } from './policy.class-method.decorator';
+import { PoliciesMask, Policy } from './decorators';
+import { GuardsList } from './types';
 
 export type BoundPolicy = {
 	Policy: Policy;

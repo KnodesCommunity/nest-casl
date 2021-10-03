@@ -1,8 +1,8 @@
 import { CustomDecorator, Type } from '@nestjs/common';
 import { uniq, without } from 'lodash';
 
+import { CHECK_POLICIES_KEY, PolicyMetadataDescriptor } from '../policies-key';
 import { PolicyDescriptor, PolicyDescriptorMask } from '../types';
-import { CHECK_POLICIES_KEY, PolicyMetadataDescriptor } from './policies-key';
 
 export const addPolicyMetadata: <K extends PolicyMetadataDescriptor['type'], V extends PolicyDescriptor<any> | PolicyDescriptorMask<any, any> = any>(
 	metadataKey: K,

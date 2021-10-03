@@ -3,6 +3,7 @@ import { isArray } from 'lodash';
 
 import { PoliciesGuard } from '../policies.guard';
 import { AnyAbilityLike, GuardsList, PolicyDescriptor } from '../types';
+import { wrapGuard } from '../wrap-guard';
 import { addPolicyMetadata, getProtoChainPropertyDescriptor } from './proto-utils';
 
 export type Policy = {
@@ -31,7 +32,7 @@ export function Policy<TAbility extends AnyAbilityLike>( policy: PolicyDescripto
 			throw new RangeError( 'Invalid call arguments' );
 		}
 		const fullDecorator = applyDecorators(
-			...guards.map( g => UseGuards( ...( isArray( g ) ? g : [ g ] ) ) ),
+			...guards.map( g => UseGuards( ...( isArray( g ) ? g : [ g ] ).map( gg => wrapGuard( gg ) ) ) ),
 			UseGuards( PoliciesGuard ),
 			addPolicyMetadata( 'policy', policy ) );
 		fullDecorator( ...args as [any] );
