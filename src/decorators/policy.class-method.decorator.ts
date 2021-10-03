@@ -4,7 +4,7 @@ import { isArray } from 'lodash';
 import { PoliciesGuard } from '../policies.guard';
 import { AnyAbilityLike, GuardsList, PolicyDescriptor } from '../types';
 import { wrapGuard } from '../wrap-guard';
-import { addPolicyMetadata, getProtoChainPropertyDescriptor } from './proto-utils';
+import { addPolicyMetadata } from './proto-utils';
 
 export type Policy = {
 	<TAbility extends AnyAbilityLike>( policy: PolicyDescriptor<TAbility> ): Policy.Described;
@@ -22,19 +22,18 @@ export function Policy<TAbility extends AnyAbilityLike>( policy: PolicyDescripto
 	const described = ( ( ...args: Parameters<MethodDecorator | ClassDecorator> ) => {
 		const guards: GuardsList = Reflect.getMetadata( guardsList, described ) ?? [];
 		if( args.length === 3 ){
-			const target = args[0];
-			const method = args[1];
-			args = [ target.constructor, method, getProtoChainPropertyDescriptor( target.constructor, method ) ];
-			if( !args[0] || !args[2] ){
+			if( !args[0] || !args[2] || typeof args[2].value !== 'function' ){
 				throw new Error( 'Invalid bind !' );
 			}
-		} else if( args.length !== 1 ){
+			addPolicyMetadata( policy )( args[2].value );
+		} else if( args.length === 1 ){
+			addPolicyMetadata( policy )( args[0] );
+		}else {
 			throw new RangeError( 'Invalid call arguments' );
 		}
 		const fullDecorator = applyDecorators(
 			...guards.map( g => UseGuards( ...( isArray( g ) ? g : [ g ] ).map( gg => wrapGuard( gg ) ) ) ),
-			UseGuards( PoliciesGuard ),
-			addPolicyMetadata( 'policy', policy ) );
+			UseGuards( PoliciesGuard ) );
 		fullDecorator( ...args as [any] );
 	} ) as Policy.Described;
 	described.usingGuard = ( ...guards ) => {

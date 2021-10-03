@@ -1,22 +1,15 @@
-import { CustomDecorator, Type } from '@nestjs/common';
+import { Type } from '@nestjs/common';
 import { uniq, without } from 'lodash';
 
-import { CHECK_POLICIES_KEY, PolicyMetadataDescriptor } from '../policies-key';
-import { PolicyDescriptor, PolicyDescriptorMask } from '../types';
+import { CHECK_POLICIES_KEY } from '../policies-key';
+import { AnyAbilityLike, PolicyDescriptor } from '../types';
 
-export const addPolicyMetadata: <K extends PolicyMetadataDescriptor['type'], V extends PolicyDescriptor<any> | PolicyDescriptorMask<any, any> = any>(
-	metadataKey: K,
-	metadataValue: V
-) => CustomDecorator<K> =
-	<K extends PolicyMetadataDescriptor['type']>( metadataKey: K, metadataValue: any ): any =>
-		( target: any ) => {
-			if( metadataKey === 'policy' ){
-				// target = target.constructor;
-			}
-			const metadata: PolicyMetadataDescriptor[] = Reflect.getMetadata( CHECK_POLICIES_KEY, target ) ?? [];
-			metadata.unshift( { type: metadataKey, policy: metadataValue } as PolicyMetadataDescriptor );
-			Reflect.defineMetadata( CHECK_POLICIES_KEY, metadata, target );
-		};
+export const addPolicyMetadata = <TAbility extends AnyAbilityLike>( metadataValue: PolicyDescriptor<TAbility> ): any =>
+	( target: any ) => {
+		const metadata: Array<PolicyDescriptor<TAbility>> = Reflect.getMetadata( CHECK_POLICIES_KEY, target ) ?? [];
+		metadata.unshift( metadataValue );
+		Reflect.defineMetadata( CHECK_POLICIES_KEY, metadata, target );
+	};
 
 // eslint-disable-next-line @typescript-eslint/ban-types -- No better type for generic ctor function
 export const getProtoChainPropertyDescriptor = ( cls: Function, property: string | symbol ): PropertyDescriptor | null =>

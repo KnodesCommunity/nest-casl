@@ -5,10 +5,8 @@ import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 
 import { CaslAbilityAugmenter, CaslAbilityFactory } from './casl-ability.factory';
-import { CHECK_POLICIES_KEY, PolicyMetadataDescriptor } from './policies-key';
-import { AnyAbilityLike, PolicyDescriptor, PolicyDescriptorMask } from './types';
-
-const isNotNil = <T>( v: T | null | undefined ): v is T => v !== null && v !== undefined;
+import { CHECK_POLICIES_KEY } from './policies-key';
+import { AnyAbilityLike, PolicyDescriptor } from './types';
 
 @Injectable()
 export class PoliciesGuard<TAbility extends AnyAbilityLike = PureAbility<any, any>> implements CanActivate {
@@ -28,8 +26,8 @@ export class PoliciesGuard<TAbility extends AnyAbilityLike = PureAbility<any, an
 		context: ExecutionContext,
 	): boolean | Promise<boolean> | Observable<boolean> {
 		const policies = [
-			...this.getClassContextPolicies( context ),
-			...this.getMethodContextPolicies( context ),
+			...this._getClassPolicies( context ),
+			...this._getMethodPolicies( context ),
 		];
 
 		const request = context.switchToHttp().getRequest();
@@ -37,7 +35,7 @@ export class PoliciesGuard<TAbility extends AnyAbilityLike = PureAbility<any, an
 		( request as any ).ability = ability;
 
 		this.augmenter?.augment( ability, context );
-		if( !policies.every( policy => this.execPolicyHandler( policy, ability ) ) ){
+		if( !policies.every( policy => this._execPolicyHandler( policy, ability ) ) ){
 			throw new ForbiddenException( 'Invalid authorizations' );
 		} else {
 			return true;
@@ -50,24 +48,8 @@ export class PoliciesGuard<TAbility extends AnyAbilityLike = PureAbility<any, an
 	 * @param context - The execution context.
 	 * @returns an array of policies to apply for the target controller and method.
 	 */
-	private getClassContextPolicies( context: ExecutionContext ): Array<PolicyDescriptor<TAbility>>{
-		const classPolicyHandlerDescriptors = this.reflector.get<PolicyMetadataDescriptor[]>( CHECK_POLICIES_KEY, context.getClass() ) || [];
-		return classPolicyHandlerDescriptors.map( cphd => {
-			switch( cphd.type ){
-				case 'policiesMask': {
-					const policy = cphd.policy as PolicyDescriptorMask<any, TAbility>;
-					return policy[context.getHandler().name] ?? policy['*'];
-				}
-
-				case 'policy': {
-					return cphd.policy as PolicyDescriptor<TAbility>;
-				}
-
-				default: {
-					throw new TypeError( `Unsupported class policy handler of type ${( cphd as any ).type}` );
-				}
-			}
-		} ).filter( isNotNil );
+	private _getClassPolicies( context: ExecutionContext ): Array<PolicyDescriptor<TAbility>>{
+		return this.reflector.get<Array<PolicyDescriptor<TAbility>>>( CHECK_POLICIES_KEY, context.getClass() ) || [];
 	}
 
 	/**
@@ -76,19 +58,8 @@ export class PoliciesGuard<TAbility extends AnyAbilityLike = PureAbility<any, an
 	 * @param context - The execution context.
 	 * @returns an array of policies to apply for the target handler.
 	 */
-	private getMethodContextPolicies( context: ExecutionContext ): Array<PolicyDescriptor<TAbility>>{
-		const methodPolicyHandlerDescriptors = this.reflector.get<PolicyMetadataDescriptor[]>( CHECK_POLICIES_KEY, context.getHandler() ) || [];
-		return methodPolicyHandlerDescriptors.map( mphd => {
-			switch( mphd.type ){
-				case 'policy': {
-					return mphd.policy as PolicyDescriptor<TAbility>;
-				}
-
-				default: {
-					throw new TypeError( `Unsupported method policy handler of type ${mphd.type}` );
-				}
-			}
-		} ).filter( isNotNil );
+	private _getMethodPolicies( context: ExecutionContext ): Array<PolicyDescriptor<TAbility>>{
+		return this.reflector.get<Array<PolicyDescriptor<TAbility>>>( CHECK_POLICIES_KEY, context.getHandler() ) || [];
 	}
 
 	/**
@@ -98,7 +69,7 @@ export class PoliciesGuard<TAbility extends AnyAbilityLike = PureAbility<any, an
 	 * @param ability - The request's ability.
 	 * @returns `true` if allowed, `false` otherwise.
 	 */
-	private execPolicyHandler( policy: PolicyDescriptor<TAbility>, ability: TAbility ) {
+	private _execPolicyHandler( policy: PolicyDescriptor<TAbility>, ability: TAbility ) {
 		if( typeof policy === 'boolean' ) {
 			return policy;
 		} else if( typeof policy === 'function' ){

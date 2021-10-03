@@ -3,7 +3,7 @@ import { uniq } from 'lodash';
 
 import { AnyAbilityLike, GuardsList, PolicyDescriptor, PolicyDescriptorMask } from '../types';
 import { Policy } from './policy.class-method.decorator';
-import { getProtoChainPropertiesNames } from './proto-utils';
+import { getProtoChainPropertiesNames, getProtoChainPropertyDescriptor } from './proto-utils';
 
 export type PoliciesMask = {
 	<TClass, TAbility extends AnyAbilityLike>( mask: PolicyDescriptorMask<TClass, TAbility> ): PoliciesMask.Described;
@@ -26,8 +26,7 @@ export function PoliciesMask<TClass, TAbility extends AnyAbilityLike>( mask: Pol
 		allMethodsToDecorate.forEach( method => {
 			if( mask[method] !== true ) {
 				const policyToApply: PolicyDescriptor<TAbility> = mask[method] ?? mask['*'] ?? { handle: () => true };
-				// Apply the policy on the method. The property descriptor is set to `null` because it is fetched from the Policy decorator anyway.
-				Policy.usingGuard( ...guards )( policyToApply )( { constructor: target }, method, null );
+				Policy.usingGuard( ...guards )( policyToApply )( target, method, getProtoChainPropertyDescriptor( target, method ) );
 			}
 		} );
 	} ) as PoliciesMask.Described;

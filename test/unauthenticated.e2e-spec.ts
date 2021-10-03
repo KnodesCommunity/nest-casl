@@ -21,18 +21,18 @@ describe( 'Unauthenticated using guard', () => {
 
 	describe( 'Infix', () => {
 		// #region infix
-		@Controller( '/unauth/infix/global-policy' )
+		@Controller( '/infix/global-policy' )
 		@Policy( true )
 			.usingGuard( TestGuard )
-		class UnauthInfixGlobalPolicy {
+		class GlobalPolicyController {
 			@Get()
 			public unauthorized(){
 				return 'SHOULD NEVER HAPPEN';
 			}
 		}
 
-		@Controller( '/unauth/infix/method-policy' )
-		class UnauthInfixMethodPolicy {
+		@Controller( '/infix/method-policy' )
+		class MethodPolicyController {
 			@Get( 'unauthorized' )
 			@Policy( true )
 				.usingGuard( TestGuard )
@@ -46,12 +46,12 @@ describe( 'Unauthenticated using guard', () => {
 			}
 		}
 
-		@Controller( '/unauth/infix/policies-mask' )
+		@Controller( '/infix/policies-mask' )
 		@PoliciesMask( {
 			unprotected: true,
 		} )
 			.usingGuard( TestGuard )
-		class UnauthInfixPoliciesMask {
+		class PoliciesMaskController {
 			@Get( 'unauthorized' )
 			public unauthorized(){
 				return 'SHOULD NEVER HAPPEN';
@@ -68,7 +68,7 @@ describe( 'Unauthenticated using guard', () => {
 			const moduleRef = await Test.createTestingModule( {
 				imports: [ CaslModule.forRoot( { abilityFactory: TestAbilityFactory } ) ],
 				controllers: [
-					UnauthInfixGlobalPolicy, UnauthInfixMethodPolicy, UnauthInfixPoliciesMask,
+					GlobalPolicyController, MethodPolicyController, PoliciesMaskController,
 				],
 				providers: [ TestGuard ],
 			} ).compile();
@@ -80,24 +80,24 @@ describe( 'Unauthenticated using guard', () => {
 		describe( 'Policy', () => {
 			describe( 'Global', () => {
 				it( 'Unauthorized', () => request( app.getHttpServer() )
-					.get( '/unauth/infix/global-policy' )
+					.get( '/infix/global-policy' )
 					.expect( HttpStatus.UNAUTHORIZED ) );
 			} );
 			describe( 'Method', () => {
 				it( 'Unauthorized', () => request( app.getHttpServer() )
-					.get( '/unauth/infix/method-policy/unauthorized' )
+					.get( '/infix/method-policy/unauthorized' )
 					.expect( HttpStatus.UNAUTHORIZED ) );
 				it( 'Authorized', () => request( app.getHttpServer() )
-					.get( '/unauth/infix/method-policy/unprotected' )
+					.get( '/infix/method-policy/unprotected' )
 					.expect( HttpStatus.OK ) );
 			} );
 		} );
 		describe( 'PoliciesMask', () => {
 			it( 'Unauthorized', () => request( app.getHttpServer() )
-				.get( '/unauth/infix/policies-mask/unauthorized' )
+				.get( '/infix/policies-mask/unauthorized' )
 				.expect( HttpStatus.UNAUTHORIZED ) );
 			it( 'Authorized', () => request( app.getHttpServer() )
-				.get( '/unauth/infix/policies-mask/unprotected' )
+				.get( '/infix/policies-mask/unprotected' )
 				.expect( HttpStatus.OK ) );
 		} );
 	} );
@@ -105,17 +105,17 @@ describe( 'Unauthenticated using guard', () => {
 		// #region prefix
 		const GuardWithTest = bindPolicy( TestGuard );
 
-		@Controller( '/unauth/prefix/global-policy' )
+		@Controller( '/prefix/global-policy' )
 		@GuardWithTest.Policy( true )
-		class UnauthPrefixGlobalPolicy {
+		class GlobalPolicyController {
 			@Get()
 			public unauthorized(){
 				return 'SHOULD NEVER HAPPEN';
 			}
 		}
 
-		@Controller( '/unauth/prefix/method-policy' )
-		class UnauthPrefixMethodPolicy {
+		@Controller( '/prefix/method-policy' )
+		class MethodPolicyController {
 			@Get( 'unauthorized' )
 			@GuardWithTest.Policy( true )
 			public unauthorized(){
@@ -128,11 +128,11 @@ describe( 'Unauthenticated using guard', () => {
 			}
 		}
 
-		@Controller( '/unauth/prefix/policies-mask' )
+		@Controller( '/prefix/policies-mask' )
 		@GuardWithTest.PoliciesMask( {
 			unprotected: true,
 		} )
-		class UnauthPrefixPoliciesMask {
+		class PoliciesMaskController {
 			@Get( 'unauthorized' )
 			public unauthorized(){
 				return 'SHOULD NEVER HAPPEN';
@@ -149,7 +149,7 @@ describe( 'Unauthenticated using guard', () => {
 			const moduleRef = await Test.createTestingModule( {
 				imports: [ CaslModule.forRoot( { abilityFactory: TestAbilityFactory } ) ],
 				controllers: [
-					UnauthPrefixGlobalPolicy, UnauthPrefixMethodPolicy, UnauthPrefixPoliciesMask,
+					GlobalPolicyController, MethodPolicyController, PoliciesMaskController,
 				],
 				providers: [ TestGuard ],
 			} ).compile();
@@ -161,24 +161,24 @@ describe( 'Unauthenticated using guard', () => {
 		describe( 'Policy', () => {
 			describe( 'Global', () => {
 				it( 'Unauthorized', () => request( app.getHttpServer() )
-					.get( '/unauth/prefix/global-policy' )
+					.get( '/prefix/global-policy' )
 					.expect( HttpStatus.UNAUTHORIZED ) );
 			} );
 			describe( 'Method', () => {
 				it( 'Unauthorized', () => request( app.getHttpServer() )
-					.get( '/unauth/prefix/method-policy/unauthorized' )
+					.get( '/prefix/method-policy/unauthorized' )
 					.expect( HttpStatus.UNAUTHORIZED ) );
 				it( 'Authorized', () => request( app.getHttpServer() )
-					.get( '/unauth/prefix/method-policy/unprotected' )
+					.get( '/prefix/method-policy/unprotected' )
 					.expect( HttpStatus.OK ) );
 			} );
 		} );
 		describe( 'PoliciesMask', () => {
 			it( 'Unauthorized', () => request( app.getHttpServer() )
-				.get( '/unauth/prefix/policies-mask/unauthorized' )
+				.get( '/prefix/policies-mask/unauthorized' )
 				.expect( HttpStatus.UNAUTHORIZED ) );
 			it( 'Authorized', () => request( app.getHttpServer() )
-				.get( '/unauth/prefix/policies-mask/unprotected' )
+				.get( '/prefix/policies-mask/unprotected' )
 				.expect( HttpStatus.OK ) );
 		} );
 	} );
