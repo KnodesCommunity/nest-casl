@@ -51,9 +51,11 @@ export const orGuard = ( guards: Array<Type<CanActivate> | string | symbol | Can
 					return from( canActivate );
 				} else if( 'pipe' in canActivate ){
 					return canActivate;
+				} else {
+					throw new TypeError( `Can't handle type of "canActivate" return "${canActivate}" for guard ${guard.constructor?.name ?? guard}` );
 				}
 			} catch( e ) {
-				return throwError( () => e );
+				return throwError( () => e as Error );
 			}
 		}
 	}

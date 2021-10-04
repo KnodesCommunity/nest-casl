@@ -1,5 +1,12 @@
 {
+    "exclude": [
+        "node_modules",
+        "dist",
+        "**/*.spec.ts"
+    ],
     "extends": "./tsconfig.spec.json",
-    "include": ["./test/**/*", "./src/**/*"],
-    "exclude": ["node_modules", "dist", "**/*.spec.ts"]
+    "include": [
+        "./test/**/*",
+        "./src/**/*"
+    ]
 }

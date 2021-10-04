@@ -42,10 +42,11 @@ const guardsList = Symbol( 'Guards list' );
  * You can also call {@link Policy.usingGuard} to create a new {@link Policy} decorator that will always apply the given guards before checking.
  *
  * @category Decorators
+ * @param this - Context. Not a parameter.
  * @param policy - The policy descriptor.
  * @returns a method or class decorator.
  */
-export function Policy<TAbility extends AnyAbilityLike>( policy: PolicyDescriptor<TAbility> ): BoundPolicy<TAbility> {
+export function Policy<TAbility extends AnyAbilityLike>( this: unknown, policy: PolicyDescriptor<TAbility> ): BoundPolicy<TAbility> {
 	const described = ( ( ...args: Parameters<MethodDecorator | ClassDecorator> ) => {
 		const guards: GuardsList = Reflect.getMetadata( guardsList, described ) ?? [];
 		if( args.length === 3 ){
@@ -77,7 +78,7 @@ export function Policy<TAbility extends AnyAbilityLike>( policy: PolicyDescripto
 		Reflect.defineMetadata( guardsList, oldGuardsList.concat( guards ), newPolicy );
 		return newPolicy;
 	};
-	Reflect.defineMetadata( guardsList, ( this ? Reflect.getMetadata( guardsList,  this ) : null ) ?? [], described );
+	Reflect.defineMetadata( guardsList, ( this ? Reflect.getMetadata( guardsList,  this as any ) : null ) ?? [], described );
 	return described;
 }
 

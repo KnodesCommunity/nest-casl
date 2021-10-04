@@ -1,10 +1,16 @@
 {
     "compilerOptions": {
-        "composite": true,
+        "composite": true
     },
     "references": [
-        {"path": "./tsconfig.src.json"},
-        {"path": "./tsconfig.spec.json"},
-        {"path": "./tsconfig.e2e-spec.json"},
+        {
+            "path": "./tsconfig.src.json"
+        },
+        {
+            "path": "./tsconfig.spec.json"
+        },
+        {
+            "path": "./tsconfig.e2e-spec.json"
+        }
     ]
 }

@@ -5,7 +5,7 @@ import { AnyAbilityLike, GuardsList, PolicyDescriptor, PolicyDescriptorMask } fr
 import { Policy } from './policy.class-method.decorator';
 import { getProtoChainPropertiesNames, getProtoChainPropertyDescriptor } from './proto-utils';
 
-type PolicyDescriptorMaskedClass<TMask extends PolicyDescriptorMask<AnyAbilityLike>, TClass> =
+type PolicyDescriptorMaskedClass<TMask extends PolicyDescriptorMask<any>, TClass> =
 	Type<{[k in Exclude<keyof TMask, '*'>]: ( ...args: any[] ) => any;}> & TClass;
 
 /**
@@ -43,10 +43,11 @@ const guardsList = Symbol( 'Guards list' );
  * You can also call {@link PoliciesMask.usingGuard} to create a new {@link PoliciesMask} decorator that will always apply the given guards before checking.
  *
  * @category Decorators
+ * @param this - Context. Not a parameter.
  * @param mask - A mask of policy descriptors.
  * @returns a class decorator.
  */
-export function PoliciesMask<TMask extends PolicyDescriptorMask<TAbility>, TAbility extends AnyAbilityLike>( mask: TMask ): BoundPoliciesMask<TMask, TAbility> {
+export function PoliciesMask<TMask extends PolicyDescriptorMask<TAbility>, TAbility extends AnyAbilityLike>( this: unknown, mask: TMask ): BoundPoliciesMask<TMask, TAbility> {
 	const described = ( <TClass>( target: PolicyDescriptorMaskedClass<TMask, TClass> ) => {
 		const guards: GuardsList = Reflect.getMetadata( guardsList, described ) ?? [];
 		const methods = getProtoChainPropertiesNames( target ).filter( p => typeof target.prototype[p] === 'function' );
@@ -55,17 +56,18 @@ export function PoliciesMask<TMask extends PolicyDescriptorMask<TAbility>, TAbil
 		allMethodsToDecorate.forEach( method => {
 			if( mask[method] !== true ) {
 				const policyToApply: PolicyDescriptor<TAbility> = mask[method] ?? mask['*'] ?? { handle: () => true };
-				Policy.usingGuard( ...guards )( policyToApply )( target, method, getProtoChainPropertyDescriptor( target, method ) );
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- This is asserted in {@link Policy}.
+				Policy.usingGuard( ...guards )( policyToApply )( target, method, getProtoChainPropertyDescriptor( target, method )! );
 			}
 		} );
 	} ) as BoundPoliciesMask<TMask, TAbility>;
 	described.usingGuard = ( ...guards ) => {
 		const oldGuardsList: GuardsList = Reflect.getMetadata( guardsList, described ) ?? [];
-		const newPoliciesMask = PoliciesMask( mask );
+		const newPoliciesMask = PoliciesMask<TMask, TAbility>( mask );
 		Reflect.defineMetadata( guardsList, oldGuardsList.concat( guards ), newPoliciesMask );
 		return newPoliciesMask;
 	};
-	Reflect.defineMetadata( guardsList, ( this ? Reflect.getMetadata( guardsList,  this ) : null ) ?? [], described );
+	Reflect.defineMetadata( guardsList, ( this ? Reflect.getMetadata( guardsList,  this as any ) : null ) ?? [], described );
 	return described;
 }
 

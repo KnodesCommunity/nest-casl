@@ -1,33 +1,38 @@
 {
-    "entryPoints": ["src/index.ts"],
-    "out": "docs",
-    "includes": "./docs-source",
-    "theme": "pages-plugin",
-    "tsconfig": "tsconfig.build.json",
-    "listInvalidSymbolLinks": true,
-    "plugin": ["typedoc-plugin-pages-fork", "./docs-source/plugin"],
     "codeBlocksDirectories": {
         "test": "./test/demo"
     },
+    "entryPoints": [
+        "src/index.ts"
+    ],
+    "includes": "./docs-source",
+    "listInvalidSymbolLinks": true,
+    "out": "docs",
     "pages": {
         "groups": [
             {
-                "title": "Guides",
                 "pages": [
                     {
-                        "title": "Getting started",
-                        "source": "./docs-source/guide/getting-started.md"
+                        "source": "./docs-source/guide/getting-started.md",
+                        "title": "Getting started"
                     },
                     {
-                        "title": "Use with guards",
-                        "source": "./docs-source/guide/use-with-guards.md"
+                        "source": "./docs-source/guide/use-with-guards.md",
+                        "title": "Use with guards"
                     },
                     {
-                        "title": "Better type constraints",
-                        "source": "./docs-source/guide/better-type-constraints.md"
+                        "source": "./docs-source/guide/better-type-constraints.md",
+                        "title": "Better type constraints"
                     }
-                ]
+                ],
+                "title": "Guides"
             }
         ]
-    }
+    },
+    "plugin": [
+        "typedoc-plugin-pages-fork",
+        "./docs-source/plugin"
+    ],
+    "theme": "pages-plugin",
+    "tsconfig": "tsconfig.build.json"
 }

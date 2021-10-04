@@ -4,11 +4,11 @@ import { AnyAbilityLike, GuardsList } from './types';
 export type BoundPolicyDecorators<TAbility extends AnyAbilityLike = AnyAbilityLike> = {
 	Policy: Policy<TAbility>;
 	PoliciesMask: PoliciesMask<TAbility>;
-	( ...guards: GuardsList ): BoundPolicyDecorators;
+	( ...guards: GuardsList ): BoundPolicyDecorators<TAbility>;
 }
 
 export const bindPolicyDecorators = <TAbility extends AnyAbilityLike = AnyAbilityLike>( ...guards: GuardsList ): BoundPolicyDecorators<TAbility> => {
-	const bound = ( ( ...guardsIn ) => bindPolicyDecorators( ...guards, ...guardsIn ) ) as BoundPolicyDecorators;
+	const bound = ( ( ...guardsIn ) => bindPolicyDecorators( ...guards, ...guardsIn ) ) as BoundPolicyDecorators<TAbility>;
 	bound.Policy = Policy.usingGuard( ...guards );
 	bound.PoliciesMask = PoliciesMask.usingGuard( ...guards );
 	return bound;
