@@ -5,7 +5,7 @@
     "theme": "pages-plugin",
     "tsconfig": "tsconfig.build.json",
     "listInvalidSymbolLinks": true,
-    "plugin": ["typedoc-plugin-pages", "./docs-source/plugin"],
+    "plugin": ["typedoc-plugin-pages-fork", "./docs-source/plugin"],
     "codeBlocksDirectories": {
         "test": "./test/demo"
     },
@@ -19,8 +19,12 @@
                         "source": "./docs-source/guide/getting-started.md"
                     },
                     {
-                        "title": "Use everywhere",
-                        "source": "./docs-source/guide/use-everywhere.md"
+                        "title": "Use with guards",
+                        "source": "./docs-source/guide/use-with-guards.md"
+                    },
+                    {
+                        "title": "Better type constraints",
+                        "source": "./docs-source/guide/better-type-constraints.md"
                     }
                 ]
             }

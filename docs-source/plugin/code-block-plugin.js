@@ -7,7 +7,8 @@ const { MarkdownEvent, PageEvent, RendererEvent } = require( 'typedoc/dist/lib/o
 
 const { options } = require( './constants' );
 
-const REGION_REGEX = /^\s*\/\/\s*#((?:end)?region)\s*(.*?)?$/gm;
+const REGION_REGEX = /^[\t ]*\/\/[\t ]*#((?:end)?region)[\t ]*(.*?)?$/gm;
+const DEFAULT_BLOCK_NAME = '__DEFAULT__'
 
 /**
  * Pages plugin for integrating your own pages into documentation output
@@ -35,8 +36,35 @@ class CodeBlockPlugin extends RendererComponent {
 	 * @param {MarkdownEvent} event
 	 */
 	_parseMarkdownEventHandler( event ) {
-		event.parsedText = event.parsedText.replace(
-            /\{@codeblock (.+?)#(.+?)(?:\s*\|\s*(.*?))?\}/, (_fullmatch, file, block, fakedFileName) => this._handleCodeBlock(file, block, fakedFileName))
+		const originalText = event.parsedText;
+		event.parsedText = originalText.replaceAll(
+			/\{@codeblock\s+(?:(foldable|folded)\s+)?(.+?)(?:#(.+?))?(?:\s*\|\s*(.*?))?\}/g, (_fullmatch, foldable, file, block, fakedFileName) => this._handleCodeBlock(file, block, fakedFileName, foldable))
+		if(event.parsedText !== originalText){
+			event.parsedText = `<style>
+.code-block {
+	tab-size: 4;
+}
+
+details.code-block summary {
+	cursor: pointer;
+}
+details.code-block summary::before {
+	content: '';
+	border: 0.5em solid transparent;
+	height: 0;
+	width: 0;
+	display: inline-block;
+	border-left-color: currentColor;
+	float: left;
+	margin-right: 0.5em
+}
+details.code-block[open] summary::before {
+	border-left-color: transparent;
+	border-top-color: currentColor;
+	margin-top: 0.25em
+}
+</style>` + event.parsedText
+		}
 	}
 
 	_resolveFile(file){
@@ -48,7 +76,8 @@ class CodeBlockPlugin extends RendererComponent {
 		return newPath;
 	}
 
-	_handleCodeBlock(file, block, fakedFileName){
+	_handleCodeBlock(file, block, fakedFileName, foldable){
+		block ??= DEFAULT_BLOCK_NAME;
 		const resolvedFile = this._resolveFile(file);
 		if(!this.fileSamples.has(resolvedFile)){
 			this.fileSamples.set(resolvedFile, this._readCodeFile(resolvedFile))
@@ -62,18 +91,48 @@ class CodeBlockPlugin extends RendererComponent {
 		const gitHubComponent = this.application.converter.getComponent('git-hub');
 		const repository = gitHubComponent.getRepository(resolvedFile);
 		const url = repository.getGitHubURL(resolvedFile);
-		const headerFileName = `${fakedFileName ?? relative(this.application.options.getValue('options'), resolvedFile)}#${codeSample.startLine}~${codeSample.endLine}`;
-		const header = Marked(`From ${url ? `[./${headerFileName}](${url}#L${codeSample.startLine}-L${codeSample.endLine})` : `./${headerFileName}`}`);
-
+		const headerFileName = fakedFileName ?? `${relative(this.application.options.getValue('options'), resolvedFile)}#${codeSample.startLine}~${codeSample.endLine}`;
+		const header = Marked(`From ${url ? `[./${headerFileName}](${url}#L${codeSample.startLine}-L${codeSample.endLine})` : `./${headerFileName}`}`)
+			.replace(/^<p>/, '<p style="margin-bottom: 0;">');
 
 		const codeHighlighted = Marked.defaults.renderer.code(codeSample.code, extname(resolvedFile).slice(1));
-		return Marked.defaults.renderer.blockquote(header + codeHighlighted);
+		return this._handleFoldCodeBlock(header, codeHighlighted, foldable);
 		//this.owner.getComponent('marked').getHighlighted(codeSample, extname(resolvedFile).slice(1));
+	}
+
+	_handleFoldCodeBlock(header, code, foldable) {
+		switch(foldable){
+			case undefined: {
+				return `<div class="code-block">${header}${code}</div>`;
+			}
+
+			case 'foldable': {
+				return `<details class="code-block" open="open"><summary>${header}</summary>${code}</details>`;
+			}
+
+			case 'folded': {
+				return `<details class="code-block"><summary>${header}</summary>${code}</details>`;
+			}
+
+			default: {
+				throw new Error('Invalid foldable marker')
+			}
+		}
 	}
 
 	_readCodeFile(file) {
 		const content = readFileSync(file, 'utf-8');
 		const regionMarkers = [...content.matchAll(REGION_REGEX)];
+
+		if(regionMarkers.length % 2 === 1) {
+			throw new SyntaxError('Invalid regions');
+		}
+		if(regionMarkers.length === 0){
+			return new Map([
+				[DEFAULT_BLOCK_NAME, this._extractBlockInfos(content, 0)]
+			]);
+		}
+
 		regionMarkers.forEach((m, i, arr) => {
 			if(
 				(i % 2 === 0 && m[1] !== 'region') ||
@@ -84,18 +143,29 @@ class CodeBlockPlugin extends RendererComponent {
 		})
 		const regions = chunk(regionMarkers, 2)
 			.reduce((acc, [start, end]) => {
-				const block = content
-					.slice(start.index + start[0].length, end.index)
-					.trim();
-				const blockStart = content.indexOf(block);
-				acc.set(start[2], {
-					code: block,
-					startLine: content.substring(0, blockStart).split('\n').length,
-					endLine: content.substring(blockStart + block.length - 1).split('\n').length,
-				});
+				acc.set(start[2], this._extractBlockInfos(content, start.index + start[0].length, end.index));
 				return acc;
 			}, new Map());
 		return regions;
+	}
+
+	/**
+	 * 
+	 * @param {string} content 
+	 * @param {number} start 
+	 * @param {number} end 
+	 * @returns 
+	 */
+	_extractBlockInfos(content, start, end){
+		const block = content
+			.slice(start, end)
+			.trim();
+		const blockStart = content.indexOf(block);
+		return {
+			code: block,
+			startLine: content.substring(0, blockStart).split('\n').length,
+			endLine: content.substring(0, blockStart + block.length - 1).split('\n').length,
+		};
 	}
 }
 module.exports.CustomPlugin = Component( { name: module.exports.PLUGIN_NAME } )( CodeBlockPlugin ) ?? CodeBlockPlugin;
