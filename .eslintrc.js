@@ -7,4 +7,9 @@ module.exports = {
 		project: [ './tsconfig.build.json', './tsconfig.spec.json', './tsconfig.e2e-spec.json' ]
 			.map( tsconfig => resolve( __dirname, tsconfig ) ),
 	},
+	rules: {
+		'jsdoc/check-tag-names': [ 'error', {
+			definedTags: [ 'category' ],
+		} ],
+	},
 };

@@ -1,18 +1,31 @@
 // From https://docs.nestjs.com/security/authorization
 import { PureAbility } from '@casl/ability';
-import { CanActivate, ExecutionContext, ForbiddenException, Inject, Injectable } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import { CanActivate, ExecutionContext, ForbiddenException, Inject, Injectable, Type } from '@nestjs/common';
+import { ModuleRef, Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 
 import { CaslAbilityFactory } from './casl-ability.factory';
-import { CHECK_POLICIES_KEY } from './policies-key';
+import { CHECK_POLICIES_KEY } from './decorators/proto-utils';
 import { AnyAbilityLike, PolicyDescriptor } from './types';
+
+const SCOPE_OPTIONS_METADATA = ( () => {
+	const fakeClass = {};
+	Injectable()( fakeClass as any );
+	const metaKeys = Reflect.getMetadataKeys( fakeClass );
+	if( metaKeys.length !== 1 ){
+		throw new Error( 'Your version of NestJS is incompatible with this package !' );
+	}
+	return metaKeys[0];
+} )();
+
+const isInjectable = ( fn: Type<any> | ( ( ...args: any[] ) => any ) ): fn is Type<any> => !!Reflect.getMetadata( SCOPE_OPTIONS_METADATA, fn );
 
 @Injectable()
 export class PoliciesGuard<TAbility extends AnyAbilityLike = PureAbility<any, any>> implements CanActivate {
 	public constructor(
-		private readonly reflector: Reflector,
-		@Inject( CaslAbilityFactory ) private readonly caslAbilityFactory: CaslAbilityFactory<TAbility>,
+		private readonly _reflector: Reflector,
+		@Inject( CaslAbilityFactory ) private readonly _caslAbilityFactory: CaslAbilityFactory<TAbility>,
+		private readonly _moduleRef: ModuleRef,
 	) {}
 
 	/**
@@ -30,13 +43,30 @@ export class PoliciesGuard<TAbility extends AnyAbilityLike = PureAbility<any, an
 		];
 
 		const request = context.switchToHttp().getRequest();
-		const ability = this.caslAbilityFactory.createFromRequest( request );
+		const ability = this._caslAbilityFactory.createFromRequest( request );
 		( request as any ).ability = ability;
 
-		if( !policies.every( policy => this._execPolicyHandler( policy, ability ) ) ){
-			throw new ForbiddenException( 'Invalid authorizations' );
+		const failingPolicy = policies.find( policy => !this._execPolicyHandler( policy, ability ) );
+		if( failingPolicy ){
+			throw new ForbiddenException( `Invalid authorizations: ${this._getFailedPolicyMessage( failingPolicy )}` );
 		} else {
 			return true;
+		}
+	}
+
+	/**
+	 * Generate the message explaining why this policy failed.
+	 *
+	 * @param descriptor - The failing policy descriptor.
+	 * @returns the explanation message.
+	 */
+	private _getFailedPolicyMessage( descriptor: PolicyDescriptor<TAbility> ): string {
+		if( typeof descriptor === 'boolean' ) {
+			return 'Endpoint statically forbidden';
+		} else if( 'handle' in descriptor || typeof descriptor === 'function' ){
+			return 'Failed condition';
+		} else {
+			return `Can't "${descriptor.action}" on "${descriptor.subject}"`;
 		}
 	}
 
@@ -47,7 +77,7 @@ export class PoliciesGuard<TAbility extends AnyAbilityLike = PureAbility<any, an
 	 * @returns an array of policies to apply for the target controller and method.
 	 */
 	private _getClassPolicies( context: ExecutionContext ): Array<PolicyDescriptor<TAbility>>{
-		return this.reflector.get<Array<PolicyDescriptor<TAbility>>>( CHECK_POLICIES_KEY, context.getClass() ) || [];
+		return this._reflector.get<Array<PolicyDescriptor<TAbility>>>( CHECK_POLICIES_KEY, context.getClass() ) || [];
 	}
 
 	/**
@@ -57,7 +87,7 @@ export class PoliciesGuard<TAbility extends AnyAbilityLike = PureAbility<any, an
 	 * @returns an array of policies to apply for the target handler.
 	 */
 	private _getMethodPolicies( context: ExecutionContext ): Array<PolicyDescriptor<TAbility>>{
-		return this.reflector.get<Array<PolicyDescriptor<TAbility>>>( CHECK_POLICIES_KEY, context.getHandler() ) || [];
+		return this._reflector.get<Array<PolicyDescriptor<TAbility>>>( CHECK_POLICIES_KEY, context.getHandler() ) || [];
 	}
 
 	/**
@@ -71,7 +101,11 @@ export class PoliciesGuard<TAbility extends AnyAbilityLike = PureAbility<any, an
 		if( typeof policy === 'boolean' ) {
 			return policy;
 		} else if( typeof policy === 'function' ){
-			return policy( ability );
+			if( isInjectable( policy ) ){
+				return this._moduleRef.get( policy ).handle( ability );
+			} else {
+				return policy( ability );
+			}
 		} else if( 'action' in policy && 'subject' in policy ){
 			return ability.can( policy.action, policy.subject );
 		} else if( 'handle' in policy ){

@@ -3,7 +3,14 @@ import { PureAbility } from '@casl/ability';
 
 import { AnyAbilityLike } from './types';
 
+/**
+ * @ignore
+ */
 export const CaslAbilityFactory = Symbol( 'CaslAbilityFactory' );
+
+/**
+ * A class interface that generate the CASL ability from the request.
+ */
 export interface CaslAbilityFactory<TAbility extends AnyAbilityLike = PureAbility<any, any>> {
 	/**
 	 * Extract the ability from the HTTP request.

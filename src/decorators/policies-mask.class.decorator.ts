@@ -5,20 +5,49 @@ import { AnyAbilityLike, GuardsList, PolicyDescriptor, PolicyDescriptorMask } fr
 import { Policy } from './policy.class-method.decorator';
 import { getProtoChainPropertiesNames, getProtoChainPropertyDescriptor } from './proto-utils';
 
-export type PoliciesMask = {
-	<TClass, TAbility extends AnyAbilityLike>( mask: PolicyDescriptorMask<TClass, TAbility> ): PoliciesMask.Described;
-	usingGuard( ...guards: GuardsList ): PoliciesMask;
+type PolicyDescriptorMaskedClass<TMask extends PolicyDescriptorMask<AnyAbilityLike>, TClass> =
+	Type<{[k in Exclude<keyof TMask, '*'>]: ( ...args: any[] ) => any;}> & TClass;
+
+/**
+ * @see {@link PoliciesMask}
+ * @ignore
+ */
+export type PoliciesMask<TAbility extends AnyAbilityLike> = {
+	/**
+	 * @see {@link PoliciesMask}
+	 */
+	<TMask extends Record<string, PolicyDescriptor<TAbility>>>( mask: TMask ): BoundPoliciesMask<TMask, TAbility>;
+	/**
+	 * @see {@link PoliciesMask.usingGuard}
+	 */
+	usingGuard( ...guards: GuardsList ): PoliciesMask<TAbility>;
 }
-export namespace PoliciesMask {
-	export type Described = ClassDecorator & {usingGuard: ( ...guards: GuardsList ) => Described};
-}
+
+/**
+ * A policies mask class decorator ready to be applied. You may add new guards using {@link BoundPolicy.usingGuard}.
+ */
+type BoundPoliciesMask<TMask extends PolicyDescriptorMask<TAbility>, TAbility extends AnyAbilityLike> =
+	& ( <TClass>( target: PolicyDescriptorMaskedClass<TMask, TClass> ) => PolicyDescriptorMaskedClass<TMask, TClass> | void )
+	& {
+		/**
+		 * Add more {@link guards} to run before checking.
+		 *
+		 * @returns the decorator with the same mask.
+		 */
+		usingGuard: ( ...guards: GuardsList ) => BoundPoliciesMask<TMask, TAbility>;
+	};
 const guardsList = Symbol( 'Guards list' );
 
 /**
- * @param mask
+ * A class decorator factory that you can call by passing a {@link PolicyDescriptorMask}.
+ * You can also call {@link PoliciesMask.usingGuard} to create a new {@link PoliciesMask} decorator that will always apply the given guards before checking.
+ *
+ * @category Decorators
+ * @param mask - A mask of policy descriptors.
+ * @returns a class decorator.
  */
-export function PoliciesMask<TClass, TAbility extends AnyAbilityLike>( mask: PolicyDescriptorMask<TClass, TAbility> ): PoliciesMask.Described {
-	const described = ( ( target: Type<Omit<TClass, '*'>> ) => {
+export function PoliciesMask<TMask extends PolicyDescriptorMask<TAbility>, TAbility extends AnyAbilityLike>( mask: TMask ): BoundPoliciesMask<TMask, TAbility> {
+	const described = ( <TClass>( target: PolicyDescriptorMaskedClass<TMask, TClass> ) => {
 		const guards: GuardsList = Reflect.getMetadata( guardsList, described ) ?? [];
 		const methods = getProtoChainPropertiesNames( target );
 		const maskKeys = Object.keys( mask );
@@ -29,20 +58,26 @@ export function PoliciesMask<TClass, TAbility extends AnyAbilityLike>( mask: Pol
 				Policy.usingGuard( ...guards )( policyToApply )( target, method, getProtoChainPropertyDescriptor( target, method ) );
 			}
 		} );
-	} ) as PoliciesMask.Described;
+	} ) as BoundPoliciesMask<TMask, TAbility>;
 	described.usingGuard = ( ...guards ) => {
 		const oldGuardsList: GuardsList = Reflect.getMetadata( guardsList, described ) ?? [];
 		const newPoliciesMask = PoliciesMask( mask );
-		Reflect.defineMetadata( guardsList, guards.concat( oldGuardsList ), newPoliciesMask );
+		Reflect.defineMetadata( guardsList, oldGuardsList.concat( guards ), newPoliciesMask );
 		return newPoliciesMask;
 	};
 	Reflect.defineMetadata( guardsList, ( this ? Reflect.getMetadata( guardsList,  this ) : null ) ?? [], described );
 	return described;
 }
 
-PoliciesMask.usingGuard = function( ...guards: GuardsList ){
+/**
+ * Create a new {@link PoliciesMask} decorator factory that will always use the given {@link guards} before checking.
+ *
+ * @param guards - The list of guards to use.
+ * @returns a new {@link PoliciesMask} decorator factory.
+ */
+PoliciesMask.usingGuard = function usingGuard( ...guards: GuardsList ){
 	const newPoliciesMaskThis = {};
-	const newPoliciesMask = PoliciesMask.bind( newPoliciesMaskThis ) as PoliciesMask;
+	const newPoliciesMask = PoliciesMask.bind( newPoliciesMaskThis ) as PoliciesMask<AnyAbilityLike>;
 	newPoliciesMask.usingGuard = PoliciesMask.usingGuard.bind( newPoliciesMaskThis );
 	const oldGuardsList: GuardsList = Reflect.getMetadata( guardsList, this ) ?? [];
 	Reflect.defineMetadata( guardsList, oldGuardsList.concat( guards ), newPoliciesMaskThis );

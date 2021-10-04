@@ -1,8 +1,9 @@
 import { Type } from '@nestjs/common';
 import { uniq, without } from 'lodash';
 
-import { CHECK_POLICIES_KEY } from '../policies-key';
 import { AnyAbilityLike, PolicyDescriptor } from '../types';
+
+export const CHECK_POLICIES_KEY = Symbol( 'check_policy' );
 
 export const addPolicyMetadata = <TAbility extends AnyAbilityLike>( metadataValue: PolicyDescriptor<TAbility> ): any =>
 	( target: any ) => {

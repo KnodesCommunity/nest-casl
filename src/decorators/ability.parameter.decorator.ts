@@ -2,7 +2,11 @@ import { Ability } from '@casl/ability';
 import { ExecutionContext, createParamDecorator } from '@nestjs/common';
 
 /**
- * Retrieve the ability of the current request.
+ * A parameter decorator factory that retrieve the ability of the current request.
+ *
+ * @category Decorators
+ * @param required - Set to `false` to not throw if no ability was found for the request. Defaults to `true`.
+ * @returns a parameter decorator that will set the parameter value to the ability. If not {@link required} and none is found, a new empty ability will be created.
  */
 export const InjectAbility: ( required?: boolean ) => ParameterDecorator =
 	createParamDecorator( ( required: boolean | undefined, execCtx: ExecutionContext ) => {

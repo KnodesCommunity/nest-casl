@@ -1,9 +1,9 @@
 import { Ability } from '@casl/ability';
-import { CanActivate, Controller, Get, HttpStatus, INestApplication, Injectable } from '@nestjs/common';
+import { CanActivate, Controller, Get, HttpStatus, INestApplication, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 
-import { CaslAbilityFactory, CaslModule, PoliciesMask, Policy, bindPolicy } from '../src';
+import { CaslAbilityFactory, CaslModule, PoliciesMask, Policy, bindPolicyDecorators } from '../src';
 
 class TestAbilityFactory implements CaslAbilityFactory {
 	public readonly createFromRequest = () => new Ability();
@@ -12,7 +12,7 @@ class TestAbilityFactory implements CaslAbilityFactory {
 @Injectable()
 class TestGuard implements CanActivate {
 	public canActivate(): boolean {
-		return false;
+		throw new UnauthorizedException();
 	}
 }
 
@@ -103,7 +103,7 @@ describe( 'Unauthenticated using guard', () => {
 	} );
 	describe( 'Prefix', () => {
 		// #region prefix
-		const GuardWithTest = bindPolicy( TestGuard );
+		const GuardWithTest = bindPolicyDecorators( TestGuard );
 
 		@Controller( '/prefix/global-policy' )
 		@GuardWithTest.Policy( true )
