@@ -49,7 +49,7 @@ const guardsList = Symbol( 'Guards list' );
 export function PoliciesMask<TMask extends PolicyDescriptorMask<TAbility>, TAbility extends AnyAbilityLike>( mask: TMask ): BoundPoliciesMask<TMask, TAbility> {
 	const described = ( <TClass>( target: PolicyDescriptorMaskedClass<TMask, TClass> ) => {
 		const guards: GuardsList = Reflect.getMetadata( guardsList, described ) ?? [];
-		const methods = getProtoChainPropertiesNames( target );
+		const methods = getProtoChainPropertiesNames( target ).filter( p => typeof target.prototype[p] === 'function' );
 		const maskKeys = Object.keys( mask );
 		const allMethodsToDecorate = uniq( [ ...methods, ...maskKeys ].filter( v => v !== '*' ) ) as any[];
 		allMethodsToDecorate.forEach( method => {

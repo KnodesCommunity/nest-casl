@@ -49,8 +49,11 @@ export function Policy<TAbility extends AnyAbilityLike>( policy: PolicyDescripto
 	const described = ( ( ...args: Parameters<MethodDecorator | ClassDecorator> ) => {
 		const guards: GuardsList = Reflect.getMetadata( guardsList, described ) ?? [];
 		if( args.length === 3 ){
-			if( !args[0] || !args[2] || typeof args[2].value !== 'function' ){
-				throw new Error( 'Invalid bind !' );
+			const propLabel = `${String( ( args[0] as any ).name )}#${String( args[1] )}`;
+			if( !args[0] || !args[2] ){
+				throw new Error( `Invalid bind on ${propLabel}` );
+			} else if( typeof args[2].value !== 'function' ){
+				throw new Error( `${propLabel} is not a method` );
 			}
 			addPolicyMetadata( policy )( args[2].value );
 		} else if( args.length === 1 ){
