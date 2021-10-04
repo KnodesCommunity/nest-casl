@@ -3,7 +3,7 @@
         "composite": true,
     },
     "references": [
-        {"path": "./tsconfig.build.json"},
+        {"path": "./tsconfig.src.json"},
         {"path": "./tsconfig.spec.json"},
         {"path": "./tsconfig.e2e-spec.json"},
     ]

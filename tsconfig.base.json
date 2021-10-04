@@ -11,6 +11,7 @@
     "sourceMap": true,
     "skipLibCheck": true,
     "incremental": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
     "moduleResolution": "node",
     "composite": true,
     "outDir": "./dist",

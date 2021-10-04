@@ -9,7 +9,6 @@
   "author": "GerkinDev",
   "main": "dist/index.js",
   "scripts": {
-    "prebuild": "rimraf dist",
     "build": "nest build",
     "build:watch": "npm run build -- --watch",
     "doc": "typedoc",
