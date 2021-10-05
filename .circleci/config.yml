@@ -89,22 +89,6 @@ jobs:
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  check:
-    triggers:
-      - schedule:
-          filters:
-            branches:
-              ignore:
-                - master
-                - main
-    jobs:
-      - install
-      - test:
-          requires:
-            - install
-      - build-artifacts:
-          requires:
-            - install
   publish:
     # triggers:
     #   - schedule:
@@ -127,6 +111,11 @@ workflows:
             - test
       - hold:
           type: approval
+          filters:
+            branches:
+              only:
+                - master
+                - main
           requires:
             - build-artifacts
             - test
