@@ -60,7 +60,8 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - '*'
+            - ./dist
+            - ./docs
   publish-docs:
     executor: git
     steps:
@@ -78,7 +79,7 @@ jobs:
             git commit -m "Rebuild docs
 
             [skip ci]"
-            git push
+            git push --set-upstream origin $CIRCLE_BRANCH
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
