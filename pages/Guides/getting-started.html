@@ -1,0 +1,305 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Getting started | @scitizen/nest-casl</title>
+	<meta name="description" content="Documentation for @scitizen/nest-casl">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../../assets/css/main.css">
+	<link rel="stylesheet" href="../../assets/css/pages.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../../assets/js/search.json" data-base="../..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../../index.html" class="title">@scitizen/nest-casl</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../../modules.html">Globals</a>
+				</li>
+				<li>
+					<a href="getting-started.html">Guides</a>
+				</li>
+				<li>
+					<a href="getting-started.html">Getting started</a>
+				</li>
+			</ul>
+			<h1>Getting started</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<style>
+.code-block {
+	tab-size: 4;
+}
+
+details.code-block summary {
+	cursor: pointer;
+}
+details.code-block summary::before {
+	content: '';
+	border: 0.5em solid transparent;
+	height: 0;
+	width: 0;
+	display: inline-block;
+	border-left-color: currentColor;
+	float: left;
+	margin-right: 0.5em
+}
+details.code-block[open] summary::before {
+	border-left-color: transparent;
+	border-top-color: currentColor;
+	margin-top: 0.25em
+}
+</style><blockquote>
+					<p>This module is compatible with <code>nestjs@^8.0.0</code>.</p>
+				</blockquote>
+				<a href="#setup-amp-configuration" id="setup-amp-configuration" style="color: inherit; text-decoration: none;">
+					<h1>Setup &amp; configuration</h1>
+				</a>
+				<p>First, install the module:</p>
+				<pre><code class="language-bash"><span style="color: #000000">npm install @scitizen/nest-casl</span>
+</code></pre>
+				<p>Then, declare a provider that generate a CASL Ability from the current request.</p>
+				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/bd39af8/test/demo/basic-use.e2e-spec.ts#L9-L19">./src/ability-factory.service.ts</a></p>
+						<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">Injectable</span><span style="color: #000000">()</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">AbilityFactory</span><span style="color: #000000"> </span><span style="color: #0000FF">implements</span><span style="color: #000000"> </span><span style="color: #267F99">CaslAbilityFactory</span><span style="color: #000000"> {</span>
+<span style="color: #000000">	</span><span style="color: #008000">// Here, `request` is the express or fastify request. You might get infos from it.</span>
+<span style="color: #000000">	</span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #795E26">createFromRequest</span><span style="color: #000000">( </span><span style="color: #001080">_request</span><span style="color: #000000">: </span><span style="color: #267F99">unknown</span><span style="color: #000000"> ): </span><span style="color: #267F99">PureAbility</span><span style="color: #000000"> {</span>
+<span style="color: #000000">		</span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">abilityBuilder</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">AbilityBuilder</span><span style="color: #000000">( </span><span style="color: #001080">PureAbility</span><span style="color: #000000"> );</span>
+<span style="color: #000000">		</span><span style="color: #001080">abilityBuilder</span><span style="color: #000000">.</span><span style="color: #795E26">can</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;feed&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000"> );</span>
+<span style="color: #000000">		</span><span style="color: #001080">abilityBuilder</span><span style="color: #000000">.</span><span style="color: #795E26">can</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;hug&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000"> );</span>
+<span style="color: #000000">		</span><span style="color: #001080">abilityBuilder</span><span style="color: #000000">.</span><span style="color: #795E26">cannot</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;rename&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000"> );</span>
+<span style="color: #000000">		</span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">abilityBuilder</span><span style="color: #000000">.</span><span style="color: #795E26">build</span><span style="color: #000000">();</span>
+<span style="color: #000000">	}</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				</div></p>
+				<p>Import the <a href="../../classes/CaslModule.html"><code>CaslModule</code></a> in your <code>AppModule</code>, and configure it to use your ability factory.</p>
+				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/bd39af8/test/demo/basic-use.e2e-spec.ts#L23-L29">./src/app.module.ts</a></p>
+						<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">Module</span><span style="color: #000000">( {</span>
+<span style="color: #000000">	</span><span style="color: #001080">imports:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">		</span><span style="color: #001080">CaslModule</span><span style="color: #000000">.</span><span style="color: #795E26">withConfig</span><span style="color: #000000">( ( { </span><span style="color: #001080">abilityFactory:</span><span style="color: #000000"> </span><span style="color: #001080">AbilityFactory</span><span style="color: #000000"> } ) ),</span>
+<span style="color: #000000">		</span><span style="color: #008000">// ....</span>
+<span style="color: #000000">	],</span>
+<span style="color: #000000">} )</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">AppModule</span><span style="color: #000000"> {}</span>
+</code></pre>
+				</div></p>
+				<p>You can now start using policy decorators (<a href="../../modules.html#Policy"><code>Policy</code></a> and <a href="../../modules.html#PoliciesMask"><code>PoliciesMask</code></a>) in your controllers !</p>
+				<a href="#basic-usage" id="basic-usage" style="color: inherit; text-decoration: none;">
+					<h1>Basic usage</h1>
+				</a>
+				<p>You can protect all methods of your controller using the <a href="../../modules.html#Policy"><code>Policy</code></a> class decorator.</p>
+				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/bd39af8/test/demo/basic-use.e2e-spec.ts#L33-L41">./src/cat-owner.controller.ts</a></p>
+						<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">Controller</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;/cat/owner&#039;</span><span style="color: #000000"> )</span>
+<span style="color: #000000">@</span><span style="color: #795E26">Policy</span><span style="color: #000000">( { </span><span style="color: #001080">action:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;rename&#039;</span><span style="color: #000000">, </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000"> } )</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">CatOwnerController</span><span style="color: #000000"> {</span>
+<span style="color: #000000">	</span><span style="color: #008000">// Given the ability builder above, this method will always reject.</span>
+<span style="color: #000000">	@</span><span style="color: #795E26">Post</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;rename&#039;</span><span style="color: #000000"> )</span>
+<span style="color: #000000">	</span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #795E26">rename</span><span style="color: #000000">( @</span><span style="color: #795E26">Body</span><span style="color: #000000">() </span><span style="color: #001080">_name</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000"> ){</span>
+<span style="color: #000000">		</span><span style="color: #008000">// ...</span>
+<span style="color: #000000">	}</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				</div></p>
+				<p>This decorator can also be used to protect individual methods.</p>
+				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/bd39af8/test/demo/basic-use.e2e-spec.ts#L45-L60">./src/cat-care.controller.ts</a></p>
+						<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">Controller</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;/cat/care&#039;</span><span style="color: #000000"> )</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">CatCareController</span><span style="color: #000000"> {</span>
+<span style="color: #000000">	</span><span style="color: #008000">// Okay, you can feed.</span>
+<span style="color: #000000">	@</span><span style="color: #795E26">Get</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;feed&#039;</span><span style="color: #000000"> )</span>
+<span style="color: #000000">	@</span><span style="color: #795E26">Policy</span><span style="color: #000000">( { </span><span style="color: #001080">action:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;feed&#039;</span><span style="color: #000000">, </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000"> } )</span>
+<span style="color: #000000">	</span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #795E26">feed</span><span style="color: #000000">(){</span>
+<span style="color: #000000">		</span><span style="color: #008000">// ...</span>
+<span style="color: #000000">	}</span>
+
+<span style="color: #000000">	</span><span style="color: #008000">// Well, I guess he won&#039;t bite.</span>
+<span style="color: #000000">	@</span><span style="color: #795E26">Get</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;hug&#039;</span><span style="color: #000000"> )</span>
+<span style="color: #000000">	@</span><span style="color: #795E26">Policy</span><span style="color: #000000">( { </span><span style="color: #001080">action:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;hug&#039;</span><span style="color: #000000">, </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000"> } )</span>
+<span style="color: #000000">	</span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #795E26">hug</span><span style="color: #000000">(){</span>
+<span style="color: #000000">		</span><span style="color: #008000">// ...</span>
+<span style="color: #000000">	}</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				</div></p>
+				<p>If you want to group various policies in the same decorator at the controller level, use the <a href="../../modules.html#PoliciesMask"><code>PoliciesMask</code></a> decorator.</p>
+				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/bd39af8/test/demo/basic-use.e2e-spec.ts#L64-L85">./src/cat.controller.ts</a></p>
+						<pre><code class="language-ts"><span style="color: #000000">@</span><span style="color: #795E26">Controller</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;/cat&#039;</span><span style="color: #000000"> )</span>
+<span style="color: #000000">@</span><span style="color: #795E26">PoliciesMask</span><span style="color: #000000">( {</span>
+<span style="color: #000000">	</span><span style="color: #001080">feed:</span><span style="color: #000000"> { </span><span style="color: #001080">action:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;feed&#039;</span><span style="color: #000000">, </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">	</span><span style="color: #001080">hug:</span><span style="color: #000000"> { </span><span style="color: #001080">action:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;hug&#039;</span><span style="color: #000000">, </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">	</span><span style="color: #001080">rename:</span><span style="color: #000000"> { </span><span style="color: #001080">action:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;rename&#039;</span><span style="color: #000000">, </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;cat&#039;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">} )</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">CatController</span><span style="color: #000000"> {</span>
+<span style="color: #000000">	@</span><span style="color: #795E26">Get</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;feed&#039;</span><span style="color: #000000"> )</span>
+<span style="color: #000000">	</span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #795E26">feed</span><span style="color: #000000">(){</span>
+<span style="color: #000000">		</span><span style="color: #008000">// ...</span>
+<span style="color: #000000">	}</span>
+
+<span style="color: #000000">	@</span><span style="color: #795E26">Get</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;hug&#039;</span><span style="color: #000000"> )</span>
+<span style="color: #000000">	</span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #795E26">hug</span><span style="color: #000000">(){</span>
+<span style="color: #000000">		</span><span style="color: #008000">// ...</span>
+<span style="color: #000000">	}</span>
+
+<span style="color: #000000">	@</span><span style="color: #795E26">Post</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;rename&#039;</span><span style="color: #000000"> )</span>
+<span style="color: #000000">	</span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #795E26">rename</span><span style="color: #000000">( @</span><span style="color: #795E26">Body</span><span style="color: #000000">() </span><span style="color: #001080">_name</span><span style="color: #000000">: </span><span style="color: #267F99">string</span><span style="color: #000000"> ){</span>
+<span style="color: #000000">		</span><span style="color: #008000">// ...</span>
+<span style="color: #000000">	}</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				</div></p>
+				<p>Check the tests !</p>
+				<p><details class="code-block"><summary><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/bd39af8/test/demo/basic-use.e2e-spec.ts#L90-L129">./test/cats.e2e-spec.ts</a></p>
+						</summary><pre><code class="language-ts"><span style="color: #795E26">describe</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;Basic usage&#039;</span><span style="color: #000000">, () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">	</span><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">app</span><span style="color: #000000">: </span><span style="color: #267F99">INestApplication</span><span style="color: #000000">;</span>
+
+<span style="color: #000000">	</span><span style="color: #795E26">beforeAll</span><span style="color: #000000">( </span><span style="color: #0000FF">async</span><span style="color: #000000"> () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">		</span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">moduleRef</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">Test</span><span style="color: #000000">.</span><span style="color: #795E26">createTestingModule</span><span style="color: #000000">( {</span>
+<span style="color: #000000">			</span><span style="color: #001080">imports:</span><span style="color: #000000"> [ </span><span style="color: #001080">CaslModule</span><span style="color: #000000">.</span><span style="color: #795E26">withConfig</span><span style="color: #000000">( { </span><span style="color: #001080">abilityFactory:</span><span style="color: #000000"> </span><span style="color: #001080">AbilityFactory</span><span style="color: #000000"> } ) ],</span>
+<span style="color: #000000">			</span><span style="color: #001080">controllers:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">				</span><span style="color: #001080">CatOwnerController</span><span style="color: #000000">, </span><span style="color: #001080">CatCareController</span><span style="color: #000000">, </span><span style="color: #001080">CatController</span><span style="color: #000000">,</span>
+<span style="color: #000000">			],</span>
+<span style="color: #000000">		} ).</span><span style="color: #795E26">compile</span><span style="color: #000000">();</span>
+
+<span style="color: #000000">		</span><span style="color: #001080">app</span><span style="color: #000000"> = </span><span style="color: #001080">moduleRef</span><span style="color: #000000">.</span><span style="color: #795E26">createNestApplication</span><span style="color: #000000">();</span>
+<span style="color: #000000">		</span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">app</span><span style="color: #000000">.</span><span style="color: #795E26">init</span><span style="color: #000000">();</span>
+<span style="color: #000000">	} );</span>
+
+<span style="color: #000000">	</span><span style="color: #795E26">describe</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;CatOwnerController&#039;</span><span style="color: #000000">, () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">		</span><span style="color: #795E26">it</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;should not be able to rename a cat&#039;</span><span style="color: #000000">, () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #795E26">request</span><span style="color: #000000">( </span><span style="color: #001080">app</span><span style="color: #000000">.</span><span style="color: #795E26">getHttpServer</span><span style="color: #000000">() )</span>
+<span style="color: #000000">			.</span><span style="color: #795E26">post</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;/cat/owner/rename&#039;</span><span style="color: #000000"> )</span>
+<span style="color: #000000">			.</span><span style="color: #795E26">expect</span><span style="color: #000000">( </span><span style="color: #001080">HttpStatus</span><span style="color: #000000">.</span><span style="color: #0070C1">FORBIDDEN</span><span style="color: #000000"> ) );</span>
+<span style="color: #000000">	} );</span>
+<span style="color: #000000">	</span><span style="color: #795E26">describe</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;CatCareController&#039;</span><span style="color: #000000">, () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">		</span><span style="color: #795E26">it</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;should be able to feed the cat&#039;</span><span style="color: #000000">, () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #795E26">request</span><span style="color: #000000">( </span><span style="color: #001080">app</span><span style="color: #000000">.</span><span style="color: #795E26">getHttpServer</span><span style="color: #000000">() )</span>
+<span style="color: #000000">			.</span><span style="color: #795E26">get</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;/cat/care/feed&#039;</span><span style="color: #000000"> )</span>
+<span style="color: #000000">			.</span><span style="color: #795E26">expect</span><span style="color: #000000">( </span><span style="color: #001080">HttpStatus</span><span style="color: #000000">.</span><span style="color: #0070C1">OK</span><span style="color: #000000"> ) );</span>
+<span style="color: #000000">		</span><span style="color: #795E26">it</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;should be able to hug the cat&#039;</span><span style="color: #000000">, () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #795E26">request</span><span style="color: #000000">( </span><span style="color: #001080">app</span><span style="color: #000000">.</span><span style="color: #795E26">getHttpServer</span><span style="color: #000000">() )</span>
+<span style="color: #000000">			.</span><span style="color: #795E26">get</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;/cat/care/hug&#039;</span><span style="color: #000000"> )</span>
+<span style="color: #000000">			.</span><span style="color: #795E26">expect</span><span style="color: #000000">( </span><span style="color: #001080">HttpStatus</span><span style="color: #000000">.</span><span style="color: #0070C1">OK</span><span style="color: #000000"> ) );</span>
+<span style="color: #000000">	} );</span>
+<span style="color: #000000">	</span><span style="color: #795E26">describe</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;PoliciesMask&#039;</span><span style="color: #000000">, () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">		</span><span style="color: #795E26">it</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;should not be able to rename a cat&#039;</span><span style="color: #000000">, () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #795E26">request</span><span style="color: #000000">( </span><span style="color: #001080">app</span><span style="color: #000000">.</span><span style="color: #795E26">getHttpServer</span><span style="color: #000000">() )</span>
+<span style="color: #000000">			.</span><span style="color: #795E26">post</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;/cat/rename&#039;</span><span style="color: #000000"> )</span>
+<span style="color: #000000">			.</span><span style="color: #795E26">expect</span><span style="color: #000000">( </span><span style="color: #001080">HttpStatus</span><span style="color: #000000">.</span><span style="color: #0070C1">FORBIDDEN</span><span style="color: #000000"> ) );</span>
+<span style="color: #000000">		</span><span style="color: #795E26">it</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;should be able to feed the cat&#039;</span><span style="color: #000000">, () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #795E26">request</span><span style="color: #000000">( </span><span style="color: #001080">app</span><span style="color: #000000">.</span><span style="color: #795E26">getHttpServer</span><span style="color: #000000">() )</span>
+<span style="color: #000000">			.</span><span style="color: #795E26">get</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;/cat/feed&#039;</span><span style="color: #000000"> )</span>
+<span style="color: #000000">			.</span><span style="color: #795E26">expect</span><span style="color: #000000">( </span><span style="color: #001080">HttpStatus</span><span style="color: #000000">.</span><span style="color: #0070C1">OK</span><span style="color: #000000"> ) );</span>
+<span style="color: #000000">		</span><span style="color: #795E26">it</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;should be able to hug the cat&#039;</span><span style="color: #000000">, () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #795E26">request</span><span style="color: #000000">( </span><span style="color: #001080">app</span><span style="color: #000000">.</span><span style="color: #795E26">getHttpServer</span><span style="color: #000000">() )</span>
+<span style="color: #000000">			.</span><span style="color: #795E26">get</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;/cat/hug&#039;</span><span style="color: #000000"> )</span>
+<span style="color: #000000">			.</span><span style="color: #795E26">expect</span><span style="color: #000000">( </span><span style="color: #001080">HttpStatus</span><span style="color: #000000">.</span><span style="color: #0070C1">OK</span><span style="color: #000000"> ) );</span>
+<span style="color: #000000">	} );</span>
+<span style="color: #000000">} );</span>
+</code></pre>
+				</details></p>
+				<a href="#what-next-" id="what-next-" style="color: inherit; text-decoration: none;">
+					<h1>What next ?</h1>
+				</a>
+				<p><a href="use-with-guards.html">Use with guards</a></p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="label pp-nav pp-group">
+						<span>Guides</span>
+					</li>
+					<li class="current pp-nav pp-page">
+						<a href="getting-started.html">Getting started</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="use-with-guards.html">Use with guards</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="better-type-constraints.html">Better type constraints</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>API</span>
+					</li>
+					<li class=" ">
+						<a href="../../modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="../../modules/PoliciesMask.html">Policies<wbr>Mask</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="../../modules/Policy.html">Policy</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../../assets/js/search.json"><' + '/script>');</script>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Better type constraints | @scitizen/nest-casl</title>
+	<meta name="description" content="Documentation for @scitizen/nest-casl">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../../assets/css/main.css">
+	<link rel="stylesheet" href="../../assets/css/pages.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../../assets/js/search.json" data-base="../..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../../index.html" class="title">@scitizen/nest-casl</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../../modules.html">Globals</a>
+				</li>
+				<li>
+					<a href="getting-started.html">Guides</a>
+				</li>
+				<li>
+					<a href="better-type-constraints.html">Better type constraints</a>
+				</li>
+			</ul>
+			<h1>Better type constraints</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<style>
+.code-block {
+	tab-size: 4;
+}
+
+details.code-block summary {
+	cursor: pointer;
+}
+details.code-block summary::before {
+	content: '';
+	border: 0.5em solid transparent;
+	height: 0;
+	width: 0;
+	display: inline-block;
+	border-left-color: currentColor;
+	float: left;
+	margin-right: 0.5em
+}
+details.code-block[open] summary::before {
+	border-left-color: transparent;
+	border-top-color: currentColor;
+	margin-top: 0.25em
+}
+</style><p>So far, we were able to configure your policies. But we can&#39;t yet check that our <code>action</code>s or <code>subject</code>s are actually matching what we declared.</p>
+				<a href="#define-the-ability-type" id="define-the-ability-type" style="color: inherit; text-decoration: none;">
+					<h1>Define the ability type</h1>
+				</a>
+				<p>Let&#39;s configure our ability types:</p>
+				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/bd39af8/test/demo/better-types/ability.ts#L1-L6">./test/demo/better-types/ability.ts#1~6</a></p>
+						<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Ability</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@casl/ability&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">type</span><span style="color: #000000"> </span><span style="color: #267F99">MyAbilities</span><span style="color: #000000"> =</span>
+<span style="color: #000000">	| [</span><span style="color: #A31515">&#039;admin&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;ImportantData&#039;</span><span style="color: #000000">]</span>
+<span style="color: #000000">	| [</span><span style="color: #A31515">&#039;create&#039;</span><span style="color: #000000"> | </span><span style="color: #A31515">&#039;read&#039;</span><span style="color: #000000"> | </span><span style="color: #A31515">&#039;update&#039;</span><span style="color: #000000"> | </span><span style="color: #A31515">&#039;delete&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;PublicData&#039;</span><span style="color: #000000"> ];</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">type</span><span style="color: #000000"> </span><span style="color: #267F99">MyAbility</span><span style="color: #000000"> = </span><span style="color: #267F99">Ability</span><span style="color: #000000">&lt;</span><span style="color: #267F99">MyAbilities</span><span style="color: #000000">&gt;;</span>
+</code></pre>
+				</div></p>
+				<p>Using <code>MyAbility</code>, we can&#39;t pass anything to <code>can</code> or <code>cannot</code>: types are constrained.</p>
+				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/bd39af8/test/demo/better-types/ability.typecheck.e2e-spec.ts#L1-L12">./test/demo/better-types/ability.typecheck.e2e-spec.ts#1~12</a></p>
+						<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">expectTypeOf</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;expect-type&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">MyAbility</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;./ability&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #795E26">it</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;ability should have correct typings&#039;</span><span style="color: #000000">, () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">	</span><span style="color: #795E26">expectTypeOf</span><span style="color: #000000">&lt;[</span><span style="color: #A31515">&#039;read&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;PublicData&#039;</span><span style="color: #000000">]&gt;().</span><span style="color: #795E26">toMatchTypeOf</span><span style="color: #000000">&lt;</span><span style="color: #267F99">Parameters</span><span style="color: #000000">&lt;</span><span style="color: #267F99">MyAbility</span><span style="color: #000000">[</span><span style="color: #A31515">&#039;can&#039;</span><span style="color: #000000">]&gt;&gt;();</span>
+<span style="color: #000000">	</span><span style="color: #795E26">expectTypeOf</span><span style="color: #000000">&lt;[</span><span style="color: #A31515">&#039;create&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;PublicData&#039;</span><span style="color: #000000">]&gt;().</span><span style="color: #795E26">toMatchTypeOf</span><span style="color: #000000">&lt;</span><span style="color: #267F99">Parameters</span><span style="color: #000000">&lt;</span><span style="color: #267F99">MyAbility</span><span style="color: #000000">[</span><span style="color: #A31515">&#039;can&#039;</span><span style="color: #000000">]&gt;&gt;();</span>
+<span style="color: #000000">	</span><span style="color: #795E26">expectTypeOf</span><span style="color: #000000">&lt;[</span><span style="color: #A31515">&#039;admin&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;ImportantData&#039;</span><span style="color: #000000">]&gt;().</span><span style="color: #795E26">toMatchTypeOf</span><span style="color: #000000">&lt;</span><span style="color: #267F99">Parameters</span><span style="color: #000000">&lt;</span><span style="color: #267F99">MyAbility</span><span style="color: #000000">[</span><span style="color: #A31515">&#039;can&#039;</span><span style="color: #000000">]&gt;&gt;();</span>
+
+<span style="color: #000000">	</span><span style="color: #795E26">expectTypeOf</span><span style="color: #000000">&lt;[</span><span style="color: #A31515">&#039;admin&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;PublicData&#039;</span><span style="color: #000000">]&gt;().</span><span style="color: #001080">not</span><span style="color: #000000">.</span><span style="color: #795E26">toMatchTypeOf</span><span style="color: #000000">&lt;</span><span style="color: #267F99">Parameters</span><span style="color: #000000">&lt;</span><span style="color: #267F99">MyAbility</span><span style="color: #000000">[</span><span style="color: #A31515">&#039;can&#039;</span><span style="color: #000000">]&gt;&gt;();</span>
+<span style="color: #000000">	</span><span style="color: #795E26">expectTypeOf</span><span style="color: #000000">&lt;[</span><span style="color: #A31515">&#039;read&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;ImportantData&#039;</span><span style="color: #000000">]&gt;().</span><span style="color: #001080">not</span><span style="color: #000000">.</span><span style="color: #795E26">toMatchTypeOf</span><span style="color: #000000">&lt;</span><span style="color: #267F99">Parameters</span><span style="color: #000000">&lt;</span><span style="color: #267F99">MyAbility</span><span style="color: #000000">[</span><span style="color: #A31515">&#039;can&#039;</span><span style="color: #000000">]&gt;&gt;();</span>
+<span style="color: #000000">} );</span>
+</code></pre>
+				</div></p>
+				<p>That&#39;s great. This will greatly reduce our chances of typos. Moreover, your IDE might now suggest <code>action</code>s &amp; <code>subject</code>s for you.</p>
+				<a href="#use-the-ability-type" id="use-the-ability-type" style="color: inherit; text-decoration: none;">
+					<h1>Use the ability type</h1>
+				</a>
+				<a href="#with-the-caslabilityfactory" id="with-the-caslabilityfactory" style="color: inherit; text-decoration: none;">
+					<h2>With the <a href="../../interfaces/CaslAbilityFactory.html"><code>CaslAbilityFactory</code></a></h2>
+				</a>
+				<p>Let&#39;s now use this type in your <a href="../../interfaces/CaslAbilityFactory.html"><code>CaslAbilityFactory</code></a>:</p>
+				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/bd39af8/test/demo/better-types/ability-factory.service.ts#L1-L19">./src/ability-factory.service.ts</a></p>
+						<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">AbilityBuilder</span><span style="color: #000000">, </span><span style="color: #001080">PureAbility</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@casl/ability&#039;</span><span style="color: #000000">;</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Injectable</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@nestjs/common&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">CaslAbilityFactory</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@scitizen/nest-casl&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">MyAbility</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;./ability&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #000000">@</span><span style="color: #795E26">Injectable</span><span style="color: #000000">()</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">AbilityFactory</span><span style="color: #000000"> </span><span style="color: #0000FF">implements</span><span style="color: #000000"> </span><span style="color: #267F99">CaslAbilityFactory</span><span style="color: #000000">&lt;</span><span style="color: #267F99">MyAbility</span><span style="color: #000000">&gt; {</span>
+<span style="color: #000000">	</span><span style="color: #008000">// Here, `request` is the express or fastify request. You might get infos from it.</span>
+<span style="color: #000000">	</span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #795E26">createFromRequest</span><span style="color: #000000">( </span><span style="color: #001080">_request</span><span style="color: #000000">: </span><span style="color: #267F99">unknown</span><span style="color: #000000"> ): </span><span style="color: #267F99">MyAbility</span><span style="color: #000000"> {</span>
+<span style="color: #000000">		</span><span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #0070C1">user</span><span style="color: #000000"> } = ( </span><span style="color: #001080">_request</span><span style="color: #000000"> </span><span style="color: #AF00DB">as</span><span style="color: #000000"> </span><span style="color: #267F99">any</span><span style="color: #000000"> );</span>
+<span style="color: #000000">		</span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">abilityBuilder</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">AbilityBuilder</span><span style="color: #000000">&lt;</span><span style="color: #267F99">MyAbility</span><span style="color: #000000">&gt;( </span><span style="color: #001080">PureAbility</span><span style="color: #000000"> );</span>
+<span style="color: #000000">		</span><span style="color: #AF00DB">if</span><span style="color: #000000">( </span><span style="color: #001080">user</span><span style="color: #000000">?.</span><span style="color: #001080">role</span><span style="color: #000000"> === </span><span style="color: #A31515">&#039;admin&#039;</span><span style="color: #000000"> ) {</span>
+<span style="color: #000000">			</span><span style="color: #001080">abilityBuilder</span><span style="color: #000000">.</span><span style="color: #795E26">can</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;admin&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;ImportantData&#039;</span><span style="color: #000000"> );</span>
+<span style="color: #000000">		}</span>
+<span style="color: #000000">		</span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">abilityBuilder</span><span style="color: #000000">.</span><span style="color: #795E26">build</span><span style="color: #000000">();</span>
+<span style="color: #000000">	}</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				</div></p>
+				<a href="#with-decorators" id="with-decorators" style="color: inherit; text-decoration: none;">
+					<h2>With decorators</h2>
+				</a>
+				<p>You can pass your ability as a type parameter to your decorators to constraint your <code>action</code>s and <code>subject</code>s:</p>
+				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/bd39af8/test/demo/better-types/test.controller.ts#L1-L21">./src/test.controller.ts</a></p>
+						<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Controller</span><span style="color: #000000">, </span><span style="color: #001080">Get</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@nestjs/common&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Policy</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@scitizen/nest-casl&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">MyAbility</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;./ability&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #000000">@</span><span style="color: #795E26">Controller</span><span style="color: #000000">()</span>
+<span style="color: #008000">// @ts-expect-error -- `something` is not a valid subject</span>
+<span style="color: #000000">@</span><span style="color: #795E26">Policy</span><span style="color: #000000">&lt;</span><span style="color: #267F99">MyAbility</span><span style="color: #000000">&gt;( { </span><span style="color: #001080">action:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;admin&#039;</span><span style="color: #000000">, </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;something&#039;</span><span style="color: #000000"> } )</span>
+<span style="color: #008000">// @ts-expect-error -- `rick-roll` is not a valid action</span>
+<span style="color: #000000">@</span><span style="color: #795E26">Policy</span><span style="color: #000000">&lt;</span><span style="color: #267F99">MyAbility</span><span style="color: #000000">&gt;( { </span><span style="color: #001080">action:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;rick-roll&#039;</span><span style="color: #000000">, </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ImportantData&#039;</span><span style="color: #000000"> } )</span>
+<span style="color: #008000">// @ts-expect-error -- `read` is not a valid action on `ImportantData`</span>
+<span style="color: #000000">@</span><span style="color: #795E26">Policy</span><span style="color: #000000">&lt;</span><span style="color: #267F99">MyAbility</span><span style="color: #000000">&gt;( { </span><span style="color: #001080">action:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;read&#039;</span><span style="color: #000000">, </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ImportantData&#039;</span><span style="color: #000000"> } )</span>
+<span style="color: #000000">@</span><span style="color: #795E26">Policy</span><span style="color: #000000">&lt;</span><span style="color: #267F99">MyAbility</span><span style="color: #000000">&gt;( { </span><span style="color: #001080">action:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;read&#039;</span><span style="color: #000000">, </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;PublicData&#039;</span><span style="color: #000000"> } )</span>
+<span style="color: #008000">// ...</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">TestController</span><span style="color: #000000"> {</span>
+<span style="color: #000000">	@</span><span style="color: #795E26">Get</span><span style="color: #000000">()</span>
+<span style="color: #000000">	</span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #795E26">method</span><span style="color: #000000">(){</span>
+<span style="color: #000000">		</span><span style="color: #008000">// ...</span>
+<span style="color: #000000">	}</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				</div></p>
+				<p>But the boring part here is that you have to pass your ability type to <strong>every</strong> decorator in order to constrain them. Hopefully, you can solve this:</p>
+				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/bd39af8/test/demo/better-types/my-policies.ts#L1-L5">./src/my-policies.ts</a></p>
+						<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">bindPolicyDecorators</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@scitizen/nest-casl&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">MyAbility</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;./ability&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">MyPolicies</span><span style="color: #000000"> = </span><span style="color: #795E26">bindPolicyDecorators</span><span style="color: #000000">&lt;</span><span style="color: #267F99">MyAbility</span><span style="color: #000000">&gt;( </span><span style="color: #008000">/* you can even pass some guards here ! */</span><span style="color: #000000"> );</span>
+</code></pre>
+				</div></p>
+				<p>Then, simply enjoy type contraints !</p>
+				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/bd39af8/test/demo/better-types/test-bound.controller.ts#L1-L26">./src/test-bound.controller.ts</a></p>
+						<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Controller</span><span style="color: #000000">, </span><span style="color: #001080">Get</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@nestjs/common&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">MyPolicies</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;./my-policies&#039;</span><span style="color: #000000">;</span>
+
+<span style="color: #000000">@</span><span style="color: #795E26">Controller</span><span style="color: #000000">()</span>
+<span style="color: #000000">@</span><span style="color: #001080">MyPolicies</span><span style="color: #000000">.</span><span style="color: #795E26">PoliciesMask</span><span style="color: #000000">( {</span>
+<span style="color: #000000">	</span><span style="color: #A31515">&#039;*&#039;</span><span style="color: #001080">:</span><span style="color: #000000"> { </span><span style="color: #001080">action:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;admin&#039;</span><span style="color: #000000">, </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;ImportantData&#039;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">	</span><span style="color: #A31515">&#039;read&#039;</span><span style="color: #001080">:</span><span style="color: #000000"> { </span><span style="color: #001080">action:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;read&#039;</span><span style="color: #000000">, </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;PublicData&#039;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">	</span><span style="color: #A31515">&#039;create&#039;</span><span style="color: #001080">:</span><span style="color: #000000"> { </span><span style="color: #001080">action:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;create&#039;</span><span style="color: #000000">, </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;PublicData&#039;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">} )</span>
+<span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">TestController</span><span style="color: #000000"> {</span>
+<span style="color: #000000">	@</span><span style="color: #795E26">Get</span><span style="color: #000000">()</span>
+<span style="color: #000000">	@</span><span style="color: #001080">MyPolicies</span><span style="color: #000000">.</span><span style="color: #795E26">Policy</span><span style="color: #000000">( { </span><span style="color: #795E26">handle</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #001080">ability</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">ability</span><span style="color: #000000">.</span><span style="color: #795E26">can</span><span style="color: #000000">( </span><span style="color: #A31515">&#039;read&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;PublicData&#039;</span><span style="color: #000000"> ) } )</span>
+<span style="color: #000000">	</span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #795E26">create</span><span style="color: #000000">(){</span>
+<span style="color: #000000">		</span><span style="color: #008000">// ...</span>
+<span style="color: #000000">	}</span>
+<span style="color: #000000">	@</span><span style="color: #795E26">Get</span><span style="color: #000000">()</span>
+<span style="color: #000000">	</span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #795E26">read</span><span style="color: #000000">(){</span>
+<span style="color: #000000">		</span><span style="color: #008000">// ...</span>
+<span style="color: #000000">	}</span>
+
+<span style="color: #000000">	@</span><span style="color: #795E26">Get</span><span style="color: #000000">()</span>
+<span style="color: #000000">	</span><span style="color: #0000FF">public</span><span style="color: #000000"> </span><span style="color: #795E26">admin</span><span style="color: #000000">(){</span>
+<span style="color: #000000">		</span><span style="color: #008000">// ...</span>
+<span style="color: #000000">	}</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				</div></p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="label pp-nav pp-group">
+						<span>Guides</span>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="getting-started.html">Getting started</a>
+					</li>
+					<li class=" pp-nav pp-page">
+						<a href="use-with-guards.html">Use with guards</a>
+					</li>
+					<li class="current pp-nav pp-page">
+						<a href="better-type-constraints.html">Better type constraints</a>
+					</li>
+					<li class="label pp-nav pp-group">
+						<span>API</span>
+					</li>
+					<li class=" ">
+						<a href="../../modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="../../modules/PoliciesMask.html">Policies<wbr>Mask</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="../../modules/Policy.html">Policy</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../../assets/js/search.json"><' + '/script>');</script>
+</body>
+</html>
