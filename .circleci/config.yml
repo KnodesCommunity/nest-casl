@@ -15,30 +15,44 @@ orbs:
   npm-publisher: uraway/npm-publisher@0.2.0
       
 jobs:
+  install:
+    executor: node
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - ${{ runner.os }}-node-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - ${{ runner.os }}-node-cache-{{ .Branch }}
+            - ${{ runner.os }}-node-cache-
+      - run: npm install
+      - save_cache:
+          key: ${{ runner.os }}-node-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+      - persist_to_workspace:
+          root: .
+          paths:
+            - '*'
   test:
     executor: node
     steps:
-      - checkout
-      - run: |
-          npm ci
-          npm run lint
-          npm run test:cov
-          npm run test:e2e
+      - run: npm run lint
+      - run: npm run test:cov
       - store_artifacts:
           path: ~/repo/coverage
+      - run: npm run test:e2e
   build-artifacts:
     executor: node
     steps:
-      - checkout
+      - attach_workspace:
+          at: .
       - run: |
-          ls
           npm run build
           npm run docs
       - persist_to_workspace:
           root: .
           paths:
-            - docs
-            - dist
+            - '*'
   publish-docs: 
     executor: git
     steps: 
@@ -93,17 +107,7 @@ workflows:
           pre-publish-steps:
             - attach_workspace:
                 at: .
-            - restore_cache:
-                keys:
-                  - >-
-                    v1-node-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
-                  - 'v1-node-cache-{{ .Branch }}'
-                  - v1-node-cache-
           post-publish-steps:
-            - save_cache:
-                key: 'v1-node-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}'
-                paths:
-                  - node_modules
           publish-token-variable: NPM_TOKEN
           push-git-tag: true
       - publish-docs:
