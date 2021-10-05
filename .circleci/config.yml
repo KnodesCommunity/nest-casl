@@ -89,8 +89,13 @@ jobs:
 workflows:
   publish:
     jobs:
-      - test
-      - build-artifacts
+      - install
+      - test:
+          requires:
+            - install
+      - build-artifacts:
+          requires:
+            - install
       - hold:
           type: approval
           requires:
