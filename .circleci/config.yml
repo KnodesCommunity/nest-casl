@@ -74,7 +74,7 @@ jobs:
             git remote add origin https://$CIRCLE_PROJECT_USERNAME:$GITHUB_AUTH_SECRET@github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
             git fetch origin docs || true
             git checkout -B docs
-            rm -r *
+            rm -rf *
       - run:
           name: Publish new docs
           command: |
@@ -89,7 +89,30 @@ jobs:
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
+  check:
+    triggers:
+      - schedule:
+          filters:
+            branches:
+              ignore:
+                - master
+                - main
+    jobs:
+      - install
+      - test:
+          requires:
+            - install
+      - build-artifacts:
+          requires:
+            - install
   publish:
+    # triggers:
+    #   - schedule:
+    #       filters:
+    #         branches:
+    #           only:
+    #             - master
+    #             - main
     jobs:
       - install
       - test:
@@ -111,9 +134,6 @@ workflows:
           requires:
             - hold
           # Configuration from https://circleci.com/developer/orbs/orb/uraway/npm-publisher
-          filters:
-            branches:
-              only: master
           package-path: .
           pre-publish-steps:
             - attach_workspace:
