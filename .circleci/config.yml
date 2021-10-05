@@ -21,12 +21,12 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - ${{ runner.os }}-node-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
-            - ${{ runner.os }}-node-cache-{{ .Branch }}
-            - ${{ runner.os }}-node-cache-
+            - node-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-cache-{{ .Branch }}
+            - node-cache
       - run: npm install
       - save_cache:
-          key: ${{ runner.os }}-node-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: node-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - node_modules
       - persist_to_workspace:
@@ -36,6 +36,8 @@ jobs:
   test:
     executor: node
     steps:
+      - attach_workspace:
+          at: .
       - run: npm run lint
       - run: npm run test:cov
       - store_artifacts:
@@ -48,7 +50,7 @@ jobs:
           at: .
       - run: |
           npm run build
-          npm run docs
+          npm run doc
       - persist_to_workspace:
           root: .
           paths:
