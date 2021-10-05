@@ -18,6 +18,8 @@ jobs:
   checkout:
     executor: node
     steps:
+      - attach_workspace: 
+          at: ~/repo
       - checkout
   check:
     executor: node
@@ -77,8 +79,13 @@ workflows:
       - check:
           requires:
             - checkout
-      - build-artifacts
+      - build-artifacts:
+          requires:
+            - checkout
       - npm-publisher/publish-from-package-version:
+          requires:
+            - check
+            - build-artifacts
           # Configuration from https://circleci.com/developer/orbs/orb/uraway/npm-publisher
           filters:
             branches:
