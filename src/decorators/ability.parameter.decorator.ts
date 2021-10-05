@@ -10,7 +10,8 @@ import { ExecutionContext, createParamDecorator } from '@nestjs/common';
  */
 export const InjectAbility: ( required?: boolean ) => ParameterDecorator =
 	createParamDecorator( ( required: boolean | undefined, execCtx: ExecutionContext ) => {
-		required ??= true;
+		// Use ??= once on node>14
+		required = required ?? true;
 		const { ability } = execCtx.switchToHttp().getRequest();
 		if( !ability && required ){
 			throw new Error( 'Ability is required' );

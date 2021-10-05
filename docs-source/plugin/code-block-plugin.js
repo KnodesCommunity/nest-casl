@@ -37,8 +37,14 @@ class CodeBlockPlugin extends RendererComponent {
 	 */
 	_parseMarkdownEventHandler( event ) {
 		const originalText = event.parsedText;
-		event.parsedText = originalText.replaceAll(
-			/\{@codeblock\s+(?:(foldable|folded)\s+)?(.+?)(?:#(.+?))?(?:\s*\|\s*(.*?))?\}/g, (_fullmatch, foldable, file, block, fakedFileName) => this._handleCodeBlock(file, block, fakedFileName, foldable))
+		const regexExtract = /\{@codeblock\s+(?:(foldable|folded)\s+)?(.+?)(?:#(.+?))?(?:\s*\|\s*(.*?))?\}/;
+		const regex = new RegExp(regexExtract.toString().slice(1, -1), 'g');
+		event.parsedText = originalText.replace(
+			regex,
+			fullmatch => {
+				const [, foldable, file, block, fakedFileName] = fullmatch.match(regexExtract);
+				return this._handleCodeBlock(file, block, fakedFileName, foldable)
+			})
 		if(event.parsedText !== originalText){
 			event.parsedText = `<style>
 .code-block {
@@ -77,7 +83,8 @@ details.code-block[open] summary::before {
 	}
 
 	_handleCodeBlock(file, block, fakedFileName, foldable){
-		block ??= DEFAULT_BLOCK_NAME;
+		// Use ??= once on node>14
+		block = block ?? DEFAULT_BLOCK_NAME;
 		const resolvedFile = this._resolveFile(file);
 		if(!this.fileSamples.has(resolvedFile)){
 			this.fileSamples.set(resolvedFile, this._readCodeFile(resolvedFile))
