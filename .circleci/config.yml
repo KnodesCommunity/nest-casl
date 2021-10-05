@@ -98,6 +98,10 @@ workflows:
       - build-artifacts:
           requires:
             - install
+      - publish-docs:
+          requires:
+            - build-artifacts
+            - test
       - hold:
           type: approval
           requires:
@@ -117,6 +121,3 @@ workflows:
           post-publish-steps:
           publish-token-variable: NPM_TOKEN
           push-git-tag: true
-      - publish-docs:
-          requires:
-            - npm-publisher/publish-from-package-version
