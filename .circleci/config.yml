@@ -79,6 +79,7 @@ jobs:
             git commit -m "Rebuild docs
 
             [skip ci]"
+            git remote set-url origin https://$CIRCLE_PROJECT_USERNAME:$GITHUB_AUTH_SECRET@github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
             git push --set-upstream origin $CIRCLE_BRANCH
 
 # Invoke jobs via workflows
