@@ -5,7 +5,7 @@ executors:
     docker:
       - image: cimg/node:lts
   git:
-    docker: 
+    docker:
       - image: alpine/git
 
 # Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
@@ -13,7 +13,7 @@ executors:
 orbs:
   node: circleci/node@4.7
   npm-publisher: uraway/npm-publisher@0.2.0
-      
+
 jobs:
   install:
     executor: node
@@ -55,34 +55,34 @@ jobs:
           root: .
           paths:
             - '*'
-  publish-docs: 
+  publish-docs:
     executor: git
-    steps: 
+    steps:
       - attach_workspace:
           at: .
-      - run: 
+      - run:
           name: Config git
           command: |
             git config --global user.email "Scitizen-publish-bot@users.noreply.github.com"
             git config --global user.name "Scitizen-publish-bot"
-      - run: 
+      - run:
           name: Prepare repo clone
           command: |
             mkdir publish-docs
             cd publish-docs
             git init .
             git remote add origin https://$CIRCLE_PROJECT_USERNAME:$GITHUB_AUTH_SECRET@github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
-            git fetch origin docs
-            git checkout -t origin/docs
+            git fetch origin docs || true
+            git checkout -B docs
             rm -r *
-      - run: 
+      - run:
           name: Publish new docs
           command: |
             cd publish-docs
             mv ../docs/* .
             git add .
             git commit -m "Rebuild docs
-            
+
             [skip ci]"
             git push origin docs
 
@@ -114,7 +114,7 @@ workflows:
           filters:
             branches:
               only: master
-          package-path: . 
+          package-path: .
           pre-publish-steps:
             - attach_workspace:
                 at: .
