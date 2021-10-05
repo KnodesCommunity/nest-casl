@@ -39,10 +39,16 @@ jobs:
       - attach_workspace:
           at: .
       - run: npm run lint
-      - run: npm run test:cov
-      - store_artifacts:
-          path: ~/repo/coverage
-      - run: npm run test:e2e
+      - run:
+          name: Unit tests
+          command: npm run test:unit:ci
+          when: always
+      - store_test_results:
+          path: ./junit.xml
+      - run:
+          name: E2e tests
+          command: npm run test:e2e
+          when: always
   build-artifacts:
     executor: node
     steps:
@@ -50,7 +56,7 @@ jobs:
           at: .
       - run: |
           npm run build
-          npm run doc
+          npm run doc:for-current-version
       - persist_to_workspace:
           root: .
           paths:
@@ -66,25 +72,13 @@ jobs:
             git config --global user.email "Scitizen-publish-bot@users.noreply.github.com"
             git config --global user.name "Scitizen-publish-bot"
       - run:
-          name: Prepare repo clone
-          command: |
-            mkdir publish-docs
-            cd publish-docs
-            git init .
-            git remote add origin https://$CIRCLE_PROJECT_USERNAME:$GITHUB_AUTH_SECRET@github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
-            git fetch origin docs || true
-            git checkout -B docs
-            rm -rf *
-      - run:
           name: Publish new docs
           command: |
-            cd publish-docs
-            mv ../docs/* .
-            git add .
+            git add --force docs
             git commit -m "Rebuild docs
 
             [skip ci]"
-            git push origin docs
+            git push
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
