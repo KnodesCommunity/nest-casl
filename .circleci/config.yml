@@ -15,35 +15,35 @@ orbs:
   npm-publisher: uraway/npm-publisher@0.2.0
       
 jobs:
-  checkout:
+  test:
     executor: node
     steps:
-      - attach_workspace: 
-          at: ~/repo
       - checkout
-  check:
-    executor: node
-    steps:
-      - attach_workspace: 
-          at: ~/repo
       - run: |
           npm ci
           npm run lint
-          npm run test
+          npm run test:cov
           npm run test:e2e
+      - store_artifacts:
+          path: ~/repo/coverage
   build-artifacts:
     executor: node
     steps:
-      - attach_workspace: 
-          at: ~/repo
+      - checkout
       - run: |
+          ls
           npm run build
           npm run docs
+      - persist_to_workspace:
+          root: .
+          paths:
+            - docs
+            - dist
   publish-docs: 
     executor: git
     steps: 
-      - attach_workspace: 
-          at: ~/repo
+      - attach_workspace:
+          at: .
       - run: 
           name: Config git
           command: |
@@ -75,28 +75,28 @@ jobs:
 workflows:
   publish:
     jobs:
-      - checkout
-      - check:
+      - test
+      - build-artifacts
+      - hold:
+          type: approval
           requires:
-            - checkout
-      - build-artifacts:
-          requires:
-            - checkout
+            - build-artifacts
+            - test
       - npm-publisher/publish-from-package-version:
           requires:
-            - check
-            - build-artifacts
+            - hold
           # Configuration from https://circleci.com/developer/orbs/orb/uraway/npm-publisher
           filters:
             branches:
               only: master
           package-path: . 
           pre-publish-steps:
+            - attach_workspace:
+                at: .
             - restore_cache:
                 keys:
                   - >-
-                    v1-node-cache-{{ .Branch }}-{{ checksum "package-lock.json"
-                    }}
+                    v1-node-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
                   - 'v1-node-cache-{{ .Branch }}'
                   - v1-node-cache-
           post-publish-steps:
@@ -106,3 +106,6 @@ workflows:
                   - node_modules
           publish-token-variable: NPM_TOKEN
           push-git-tag: true
+      - publish-docs:
+          requires:
+            - npm-publisher/publish-from-package-version
