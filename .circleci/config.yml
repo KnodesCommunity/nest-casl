@@ -1,0 +1,101 @@
+# This config is equivalent to both the '.circleci/extended/orb-free.yml' and the base '.circleci/config.yml'
+version: 2.1
+executors:
+  node:
+    docker:
+      - image: cimg/node:lts
+  git:
+    docker: 
+      - image: alpine/git
+
+# Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
+# See: https://circleci.com/docs/2.0/orb-intro/
+orbs:
+  node: circleci/node@4.7
+  npm-publisher: uraway/npm-publisher@0.2.0
+      
+jobs:
+  checkout:
+    executor: node
+    steps:
+      - checkout
+  check:
+    executor: node
+    steps:
+      - attach_workspace: 
+          at: ~/repo
+      - run: |
+          npm ci
+          npm run lint
+          npm run test
+          npm run test:e2e
+  build-artifacts:
+    executor: node
+    steps:
+      - attach_workspace: 
+          at: ~/repo
+      - run: |
+          npm run build
+          npm run docs
+  publish-docs: 
+    executor: git
+    steps: 
+      - attach_workspace: 
+          at: ~/repo
+      - run: 
+          name: Config git
+          command: |
+            git config --global user.email "Scitizen-publish-bot@users.noreply.github.com"
+            git config --global user.name "Scitizen-publish-bot"
+      - run: 
+          name: Prepare repo clone
+          command: |
+            mkdir publish-docs
+            cd publish-docs
+            git init .
+            git remote add origin https://$CIRCLE_PROJECT_USERNAME:$GITHUB_AUTH_SECRET@github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+            git fetch origin docs
+            git checkout -t origin/docs
+            rm -r *
+      - run: 
+          name: Publish new docs
+          command: |
+            cd publish-docs
+            mv ../docs/* .
+            git add .
+            git commit -m "Rebuild docs
+            
+            [skip ci]"
+            git push origin docs
+
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+workflows:
+  publish:
+    jobs:
+      - checkout
+      - check:
+          requires:
+            - checkout
+      - build-artifacts
+      - npm-publisher/publish-from-package-version:
+          # Configuration from https://circleci.com/developer/orbs/orb/uraway/npm-publisher
+          filters:
+            branches:
+              only: master
+          package-path: . 
+          pre-publish-steps:
+            - restore_cache:
+                keys:
+                  - >-
+                    v1-node-cache-{{ .Branch }}-{{ checksum "package-lock.json"
+                    }}
+                  - 'v1-node-cache-{{ .Branch }}'
+                  - v1-node-cache-
+          post-publish-steps:
+            - save_cache:
+                key: 'v1-node-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}'
+                paths:
+                  - node_modules
+          publish-token-variable: NPM_TOKEN
+          push-git-tag: true
