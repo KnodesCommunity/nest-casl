@@ -243,7 +243,7 @@ jobs:
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   renovate: # Workflow ran only on `renovate/*`
-    unless:
+    when:
       matches: { pattern: "^renovate/", value: << pipeline.git.branch >> }
     jobs:
       - npm-install
