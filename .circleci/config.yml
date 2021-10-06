@@ -127,7 +127,9 @@ jobs:
 workflows:
   check: # Workflow ran on all branches except `main`
     unless:
-      equal: [ main, << pipeline.git.branch >> ]
+      or:
+      - equal: [ main, << pipeline.git.branch >> ]
+      - equal: [ circleci-editor/circleci-project-setup, << pipeline.git.branch >> ]
     jobs:
       - install
       - test:
@@ -138,7 +140,9 @@ workflows:
             - install
   publish: # Workflow ran only on `main`
     when:
-      equal: [ main, << pipeline.git.branch >> ]
+      or:
+      - equal: [ main, << pipeline.git.branch >> ]
+      - equal: [ circleci-editor/circleci-project-setup, << pipeline.git.branch >> ]
     jobs:
       - install
 
