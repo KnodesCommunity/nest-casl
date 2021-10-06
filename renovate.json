@@ -1,5 +1,15 @@
 {
   "extends": [
-    "config:base"
+    "config:base",
+    "npm:unpublishSafe"
+  ],
+  "rangeStrategy": "update-lockfile",
+  "packageRules": [
+    {
+      "matchDepTypes": [
+        "peerDependencies"
+      ],
+      "rangeStrategy": "auto"
+    }
   ]
 }
