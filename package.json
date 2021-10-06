@@ -1,6 +1,6 @@
 {
   "name": "@scitizen/nest-casl",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A module for managing authorization in your nest application, using casl.",
   "license": "MIT",
   "engines": {
@@ -21,7 +21,7 @@
     "postinstall:jest-extended": "cd node_modules/jest-extended && npm i --production --ignore-scripts",
     "precommit": "npm run lint && npm run test:unit && npm run test:e2e && npm run build && npm run doc",
     "prepare": "husky install",
-    "release:do": "standard-version",
+    "release": "standard-version -a",
     "test:unit": "jest --config ./jest.config.js",
     "test:unit:ci": "JEST_JUNIT_OUTPUT_NAME=junit.unit.xml npm run test:unit -- --all --ci --reporters=default --reporters=jest-junit",
     "test:unit:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand --config ./jest.config.js -- ",
@@ -36,7 +36,7 @@
   "standard-version": {
     "releaseCommitMessageFormat": "chore(release): {{currentTag}}\n\n[skip ci]",
     "scripts": {
-      "postchangelog": "npm run doc -- --gitRevision $(node -e \"console.log(require('./package.json').version)\")",
+      "postchangelog": "npm run doc -- --gitRevision $(node -e \"console.log('v' + require('./package.json').version)\")",
       "precommit": "git add --force docs"
     }
   },
