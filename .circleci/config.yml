@@ -94,11 +94,17 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+      - run:
+          name: Config git
+          command: |
+            git config --global user.email "Scitizen-publish-bot@users.noreply.github.com"
+            git config --global user.name "Scitizen-publish-bot"
       - run: npm run release -- --no-verify
       - persist_to_workspace:
           root: .
           paths:
             - docs
+            - VERSION
             - CHANGELOG.md
             - package.json
             - package-lock.json
