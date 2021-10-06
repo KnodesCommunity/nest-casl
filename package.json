@@ -1,6 +1,6 @@
 {
   "name": "@scitizen/nest-casl",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "A module for managing authorization in your nest application, using casl.",
   "license": "MIT",
   "engines": {
@@ -36,7 +36,7 @@
   "standard-version": {
     "releaseCommitMessageFormat": "chore(release): {{currentTag}}\n\n[skip ci]",
     "scripts": {
-      "postchangelog": "npm run doc -- --gitRevision {{currentTag}}",
+      "postchangelog": "npm run doc -- --gitRevision $(node -e \"console.log(require('./package.json').version)\")",
       "precommit": "git add --force docs"
     }
   },
