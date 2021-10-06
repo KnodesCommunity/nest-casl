@@ -187,7 +187,9 @@ jobs:
           name: Publish GitHub release
           command: |
             VERSION=$(cat ./VERSION)
-            ghr -t ${GITHUB_AUTH_SECRET} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./{dist,src,package.json,package-lock.json,README.md,LICENSE,CHANGELOG.md}
+            mkdir /tmp/release
+            cp -r ./{dist,src,package.json,package-lock.json,README.md,LICENSE,CHANGELOG.md} /tmp/release
+            ghr -t ${GITHUB_AUTH_SECRET} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} /tmp/release
   npm-publish:
     executor: node
     steps:
