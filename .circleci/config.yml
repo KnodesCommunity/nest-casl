@@ -79,12 +79,12 @@ jobs:
       - run:
           name: Maybe abort ci
           command: |
-            if ! ./.circleci/release-type.sh; then
+            if ! sh ./.circleci/release-type.sh; then
               curl --request POST \
                 --url https://circleci.com/api/v2/workflow/$CIRCLE_WORKFLOW_ID/cancel \
                 --header "Circle-Token: ${CIRCLE_TOKEN}"
             else
-              echo "Should release $(./.circleci/release-type.sh)"
+              echo "Should release $(sh ./.circleci/release-type.sh)"
             fi
       - run:
           name: Check files
@@ -102,7 +102,7 @@ jobs:
       - run: 
           name: Run standard-version
           command: |
-            release_type="$(./.circleci/release-type.sh)"
+            release_type="$(sh ./.circleci/release-type.sh)"
             if [ -z ${release_type} ]; then
               npm run release -- --no-verify
             else
@@ -153,7 +153,7 @@ jobs:
           name: Publish GitHub release
           command: |
             VERSION=$(cat ./VERSION)
-            # ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./
+            # ghr -t ${GITHUB_AUTH_SECRET} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./
   npm-publish:
     executor: node
     steps:
