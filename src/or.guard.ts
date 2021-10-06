@@ -1,25 +1,19 @@
 import { CanActivate, ExecutionContext, Injectable, Type } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { lastValueFrom } from 'rxjs';
+
+import { anyToPromise } from './utils';
 
 const isGuard = ( v: any ): v is CanActivate => typeof v === 'object' && v && 'canActivate' in v;
 
-const canActivateGuardToPromise = ( guard: CanActivate, context: ExecutionContext ) => {
-	try {
-		const canActivate = guard.canActivate( context );
-		if( typeof canActivate === 'boolean' ){
-			return Promise.resolve( canActivate );
-		} else if( 'then' in canActivate ){
-			return canActivate;
-		} else if( 'pipe' in canActivate ){
-			return lastValueFrom( canActivate );
-		} else {
-			throw new TypeError( `Can't handle type of "canActivate" return "${canActivate}" for guard ${guard.constructor?.name ?? guard}` );
-		}
-	} catch( e ) {
-		return Promise.reject( e );
+const canActivateGuardToPromise = ( guard: CanActivate, context: ExecutionContext ) => anyToPromise( () => {
+	const canActivate = guard.canActivate( context );
+	if( typeof canActivate !== 'boolean' &&
+		!( 'then' in canActivate ) &&
+		!( 'pipe' in canActivate ) ){
+		throw new TypeError( `Can't handle type of "canActivate" return "${canActivate}" for guard ${guard.constructor?.name ?? guard}` );
 	}
-};
+	return canActivate;
+} );
 
 export const mergeGuardResults = async ( guards: readonly CanActivate[], context: ExecutionContext ): Promise<boolean> => {
 	let firstRes: {error: Error} | {value: boolean} | null = null;

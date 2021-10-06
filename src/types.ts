@@ -1,6 +1,8 @@
 import { Ability } from '@casl/ability';
 import { CanActivate, Type } from '@nestjs/common';
 
+import { MaybeAsyncValue } from './utils';
+
 /**
  * A [CASL ability object](https://casl.js.org/v5/en/api/casl-ability#ability).
  *
@@ -12,14 +14,14 @@ export type AnyAbilityLike = Pick<Ability<any, any>, 'can' | 'cannot'>
 /**
  * This interface specify a class or object that can do dynamic and complex checks about the current user abilities.
  */
-export interface IPolicy<TAbility extends AnyAbilityLike> {
+export interface IPolicy<TAbility extends AnyAbilityLike = AnyAbilityLike> {
 	/**
 	 * Check if the ability is allowed.
 	 *
 	 * @param ability - The request's ability.
 	 * @returns `true` if allowed, `false` otherwise.
 	 */
-	handle( ability: TAbility ): boolean;
+	handle( ability: TAbility ): MaybeAsyncValue<boolean>;
 }
 
 /**
@@ -47,7 +49,7 @@ export type SimplePolicy<TAbility extends AnyAbilityLike> = TAbility extends Abi
 export type PolicyDescriptor<TAbility extends AnyAbilityLike> =
 	| Type<IPolicy<TAbility>>
 	| IPolicy<TAbility>
-	| ( ( ability: TAbility ) => boolean )
+	| ( ( ability: TAbility ) => MaybeAsyncValue<boolean> )
 	| SimplePolicy<TAbility>
 	| boolean
 

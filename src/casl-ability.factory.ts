@@ -2,6 +2,7 @@
 import { PureAbility } from '@casl/ability';
 
 import { AnyAbilityLike } from './types';
+import { MaybeAsyncValue } from './utils';
 
 /**
  * @ignore
@@ -18,5 +19,5 @@ export interface CaslAbilityFactory<TAbility extends AnyAbilityLike = PureAbilit
 	 * @param request - The HTTP request, usually from express or fastify depending on your HTTP adapter.
 	 * @returns the ability for the user.
 	 */
-	createFromRequest( request: unknown ): TAbility;
+	createFromRequest( request: unknown ): MaybeAsyncValue<TAbility>;
 }
