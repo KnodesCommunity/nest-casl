@@ -165,7 +165,7 @@ workflows:
       - Confirm new release:
           type: approval
           requires:
-            - Check files
+            - check-releaseable
 
       - docs:
           requires:
