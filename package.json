@@ -6,8 +6,19 @@
   "engines": {
     "node": ">= 14.18.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Scitizen/nest-casl.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Scitizen/nest-casl/issues"
+  },
   "author": "GerkinDev",
   "main": "dist/index.js",
+  "files": [
+    "src",
+    "dist"
+  ],
   "scripts": {
     "build": "nest build",
     "build:watch": "npm run build -- --watch",
@@ -23,11 +34,11 @@
     "release:do": "standard-version -a",
     "release:trigger": "git commit --allow-empty -m \"ci(release): trigger release\"",
     "release:trigger:alpha": "git commit --allow-empty -m \"ci(release): trigger alpha release\"",
+    "test:e2e": "jest --config ./jest.config.e2e.js",
+    "test:e2e:ci": "JEST_JUNIT_OUTPUT_NAME=junit.e2e.xml npm run test:e2e -- --all --ci --reporters=default --reporters=jest-junit",
     "test:unit": "jest --config ./jest.config.js",
     "test:unit:ci": "JEST_JUNIT_OUTPUT_NAME=junit.unit.xml npm run test:unit -- --all --ci --coverage --reporters=default --reporters=jest-junit",
-    "test:unit:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand --config ./jest.config.js -- ",
-    "test:e2e": "jest --config ./jest.config.e2e.js",
-    "test:e2e:ci": "JEST_JUNIT_OUTPUT_NAME=junit.e2e.xml npm run test:e2e -- --all --ci --reporters=default --reporters=jest-junit"
+    "test:unit:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand --config ./jest.config.js -- "
   },
   "commitlint": {
     "extends": [
@@ -37,15 +48,11 @@
   "standard-version": {
     "releaseCommitMessageFormat": "chore(release): {{currentTag}}\n\n[skip ci]",
     "scripts": {
+      "postbump": "echo $(node -e \"console.log('v' + require('./package.json').version)\") > ./VERSION",
       "postchangelog": "npm run doc -- --gitRevision $(node -e \"console.log('v' + require('./package.json').version)\")",
-      "precommit": "git add --force docs",
-      "postbump": "echo $(node -e \"console.log('v' + require('./package.json').version)\") > ./VERSION"
+      "precommit": "git add --force docs"
     }
   },
-  "files": [
-    "src",
-    "dist"
-  ],
   "peerDependencies": {
     "@casl/ability": "^5.0.0",
     "@nestjs/common": "^8.0.0",

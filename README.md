@@ -28,7 +28,7 @@ Use decorators everywhere to protect your controller methods.
 ## Installation
 
 ```bash
-npm install --save @scitizen/nest-casl
+npm install --save @scitizen/nest-casl @casl/ability
 ```
 
 ## In a nutshell
