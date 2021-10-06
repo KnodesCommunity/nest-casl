@@ -38,6 +38,7 @@ jobs:
       - attach_workspace:
           at: .
       - run: npm run lint
+
       - run:
           name: Unit tests
           command: npm run test:unit:ci
@@ -46,6 +47,7 @@ jobs:
           path: ./junit.unit.xml
       - store_test_results:
           path: ./junit.unit.xml
+
       - run:
           name: E2e tests
           command: npm run test:e2e:ci
@@ -157,8 +159,8 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - main
+                - circleci-editor/circleci-project-setup
           requires:
             - build
             - test
