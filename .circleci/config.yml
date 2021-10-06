@@ -1,0 +1,265 @@
+# This config is equivalent to both the '.circleci/extended/orb-free.yml' and the base '.circleci/config.yml'
+version: 2.1
+executors:
+  node:
+    docker:
+      - image: cimg/node:lts
+  git:
+    docker:
+      - image: alpine/git
+  golang:
+    docker:
+      - image: circleci/golang:1.10
+
+# Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
+# See: https://circleci.com/docs/2.0/orb-intro/
+orbs:
+  node: circleci/node@4.7
+
+jobs:
+  install:
+    executor: node
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1--npm-ci--{{ .Branch }}--{{ checksum "package-lock.json" }}
+            - v1--npm-ci--{{ .Branch }}
+            - v1--npm-ci
+      - run: npm ci
+      - save_cache:
+          key: v1--npm-ci-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/.npm
+      - persist_to_workspace:
+          root: .
+          paths:
+            - '*'
+  codeclimate-before:
+    executor: node
+    steps:
+      - run:
+          name: Setup Code Climate test-reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > /tmp/cc-test-reporter
+            chmod +x /tmp/cc-test-reporter
+      - persist_to_workspace:
+          root: /tmp
+          paths: 
+            - cc-test-reporter
+      - run:
+          name: Run Code Climate test-reporter `before-build`
+          command: /tmp/cc-test-reporter before-build
+  codeclimate-after:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Send report
+          command: /tmp/cc-test-reporter after-build --coverage-input-type lcov --exit-code $(cat ./TEST_STATUS)
+  test:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run: npm run lint
+
+      - run:
+          name: Unit tests
+          command: |
+            npm run test:unit:ci
+            echo $? > TEST_STATUS
+          when: always
+      - store_artifacts:
+          path: ./junit.unit.xml
+      - store_test_results:
+          path: ./junit.unit.xml
+      - store_artifacts:
+          path: ./coverage
+      - persist_to_workspace:
+          root: .
+          paths: 
+            - coverage
+            - TEST_STATUS
+
+      - run:
+          name: E2e tests
+          command: npm run test:e2e:ci
+          when: always
+      - store_artifacts:
+          path: ./junit.e2e.xml
+      - store_test_results:
+          path: ./junit.e2e.xml
+  build:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run: npm run build
+      - store_artifacts:
+          path: ./dist
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./dist
+  check-releaseable:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Maybe abort ci
+          command: |
+            if ! bash ./scripts/ci/release-type.sh; then
+              curl --request POST \
+                --url https://circleci.com/api/v2/workflow/$CIRCLE_WORKFLOW_ID/cancel \
+                --header "Circle-Token: ${CIRCLE_TOKEN}"
+            else
+              echo "Should release $(bash ./scripts/ci/release-type.sh)"
+            fi
+      - run:
+          name: Check files
+          command: npm publish --dry-run
+  do-release:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Config git
+          command: |
+            git config --global user.email "Scitizen-publish-bot@users.noreply.github.com"
+            git config --global user.name "Scitizen-publish-bot"
+      - run: 
+          name: Run standard-version
+          command: |
+            release_type="$(bash ./scripts/ci/release-type.sh)"
+            if [ -z ${release_type} ]; then
+              npm run release:do -- --no-verify
+            else
+              npm run release:do -- --prerelease ${release_type} --no-verify
+            fi
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .git
+            - docs
+            - VERSION
+            - CHANGELOG.md
+            - package.json
+            - package-lock.json
+  github-push:
+    executor: git
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Config git
+          command: |
+            git config --global user.email "Scitizen-publish-bot@users.noreply.github.com"
+            git config --global user.name "Scitizen-publish-bot"
+      - run:
+          name: Push branch & tag
+          command: |
+            git remote set-url origin https://$CIRCLE_PROJECT_USERNAME:$GITHUB_AUTH_SECRET@github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+            git push --follow-tags --set-upstream origin $CIRCLE_BRANCH
+  github-release:
+    executor: golang
+    steps:
+      - attach_workspace:
+          at: .
+      - restore_cache:
+          keys:
+            - v1--go-mod-{{ .Branch }}
+            - v1--go-mod-{{ .Branch }}
+            - v1--go-mod
+      - run:
+          name: Get GHR
+          command: go get github.com/tcnksm/ghr
+      - save_cache:
+          key: v1--go-mod--{{ .Branch }}
+          paths:
+            - /go/pkg/mod
+      - run:
+          name: Publish GitHub release
+          command: |
+            VERSION=$(cat ./VERSION)
+            ghr -t ${GITHUB_AUTH_SECRET} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./
+  npm-publish:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ./.npmrc
+      - run:
+          name: Publish package
+          command: npm publish
+
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+workflows:
+  check: # Workflow ran on all branches except `main` & `develop`
+    unless:
+      or:
+        - equal: [ main, << pipeline.git.branch >> ]
+        - equal: [ develop, << pipeline.git.branch >> ]
+    jobs:
+      - install
+      - codeclimate-before
+
+      - test:
+          requires:
+            - install
+            - codeclimate-before
+      - codeclimate-after:
+          requires:
+            - test
+      - build:
+          requires:
+            - install
+  publish: # Workflow ran only on `main` & `develop`
+    when:
+      or:
+        - equal: [ main, << pipeline.git.branch >> ]
+        - equal: [ develop, << pipeline.git.branch >> ]
+    jobs:
+      - install
+      - codeclimate-before
+
+      - test:
+          requires:
+            - install
+            - codeclimate-before
+      - codeclimate-after:
+          requires:
+            - test
+      - build:
+          requires:
+            - install
+
+      - check-releaseable:
+          requires:
+            - build
+            - test
+      - Confirm new release:
+          type: approval
+          requires:
+            - check-releaseable
+      - do-release:
+          requires:
+            - Confirm new release
+      
+      - npm-publish:
+          requires:
+            - do-release
+      - github-push:
+          requires:
+            - do-release
+      - github-release:
+          requires:
+            - do-release

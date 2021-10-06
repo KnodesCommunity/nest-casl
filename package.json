@@ -18,20 +18,34 @@
     "lint:fix": "npm run lint -- --fix",
     "postinstall": "npm run postinstall:jest-extended",
     "postinstall:jest-extended": "cd node_modules/jest-extended && npm i --production --ignore-scripts",
-    "precommit": "npm run lint && npm run test && npm run test:e2e && npm run build && npm run doc",
+    "precommit": "npm run lint && npm run test:unit && npm run test:e2e && npm run build && npm run doc && (git checkout HEAD docs || :)",
     "prepare": "husky install",
-    "release": "standard-version",
-    "test": "jest",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "release:do": "standard-version -a",
+    "release:trigger": "git commit --allow-empty -m \"ci(release): trigger release\"",
+    "release:trigger:alpha": "git commit --allow-empty -m \"ci(release): trigger alpha release\"",
+    "test:unit": "jest --config ./jest.config.js",
+    "test:unit:ci": "JEST_JUNIT_OUTPUT_NAME=junit.unit.xml npm run test:unit -- --all --ci --coverage --reporters=default --reporters=jest-junit",
+    "test:unit:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand --config ./jest.config.js -- ",
     "test:e2e": "jest --config ./jest.config.e2e.js",
-    "test:watch": "jest --watch"
+    "test:e2e:ci": "JEST_JUNIT_OUTPUT_NAME=junit.e2e.xml npm run test:e2e -- --all --ci --reporters=default --reporters=jest-junit"
   },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
     ]
   },
+  "standard-version": {
+    "releaseCommitMessageFormat": "chore(release): {{currentTag}}\n\n[skip ci]",
+    "scripts": {
+      "postchangelog": "npm run doc -- --gitRevision $(node -e \"console.log('v' + require('./package.json').version)\")",
+      "precommit": "git add --force docs",
+      "postbump": "echo $(node -e \"console.log('v' + require('./package.json').version)\") > ./VERSION"
+    }
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
   "peerDependencies": {
     "@casl/ability": "^5.0.0",
     "@nestjs/common": "^8.0.0",
@@ -74,6 +88,7 @@
     "husky": "^7.0.2",
     "jest": "^27.2.4",
     "jest-extended": "github:GerkinDev/jest-extended#build/rejects-toThrowWithMessage",
+    "jest-junit": "^13.0.0",
     "lodash": "^4.17.21",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
