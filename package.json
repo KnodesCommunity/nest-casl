@@ -110,7 +110,7 @@
     "ts-loader": "^9.2.6",
     "ts-node": "^10.2.1",
     "tsconfig-paths": "^3.11.0",
-    "typedoc": "^0.21.9",
+    "typedoc": "^0.21.9, <0.22.0",
     "typedoc-plugin-pages-fork": "^0.0.1",
     "typescript": "^4.4.3"
   }
