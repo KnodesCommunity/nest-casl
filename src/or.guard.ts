@@ -15,8 +15,19 @@ const canActivateGuardToPromise = ( guard: CanActivate, context: ExecutionContex
 	return canActivate;
 } );
 
+type GuardResult = {error: Error} | {value: boolean} | null;
+const handleGuardsFailed = ( firstRes: GuardResult ) => {
+	if( !firstRes ){
+		throw new TypeError( 'No first result' );
+	} else if( 'error' in firstRes ) {
+		throw firstRes.error;
+	} else {
+		return firstRes.value;
+	}
+};
+
 export const mergeGuardResults = async ( guards: readonly CanActivate[], context: ExecutionContext ): Promise<boolean> => {
-	let firstRes: {error: Error} | {value: boolean} | null = null;
+	let firstRes: GuardResult = null;
 	for( const guard of guards ){
 		try {
 			const ret = await canActivateGuardToPromise( guard, context );
@@ -29,13 +40,7 @@ export const mergeGuardResults = async ( guards: readonly CanActivate[], context
 		}
 	}
 
-	if( !firstRes ){
-		throw new TypeError( 'No first result' );
-	} else if( 'error' in firstRes ) {
-		throw firstRes.error;
-	} else {
-		return firstRes.value;
-	}
+	return handleGuardsFailed( firstRes );
 };
 
 export const orGuard = ( guards: Array<Type<CanActivate> | string | symbol | CanActivate> ): Type<CanActivate> => {

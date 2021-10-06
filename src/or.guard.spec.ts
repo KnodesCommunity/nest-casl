@@ -8,35 +8,27 @@ const { orGuard, mergeGuardResults } = orGuardModule;
 describe( 'OrGuard', () => {
 	describe( 'Multiple guards result merging', () => {
 		describe( 'Check order', () => {
+			const allFailingGuardsTypes = [
+				{ canActivate: jest.fn().mockReturnValue( false ) },
+				{ canActivate: jest.fn().mockResolvedValue( false ) },
+				{ canActivate: jest.fn().mockReturnValue( of( false ) ) },
+				{ canActivate: jest.fn().mockImplementation( () => {throw new Error( 'Nope sync' );} ) },
+				{ canActivate: jest.fn().mockRejectedValue( new Error( 'Nope Promise' ) ) },
+				{ canActivate: jest.fn().mockReturnValue( throwError( () => new Error( 'Nope Observable' ) ) ) },
+			] as const;
 			it( 'should handle every output types', async () => {
-				const guards = [
-					{ canActivate: jest.fn().mockReturnValue( false ) },
-					{ canActivate: jest.fn().mockResolvedValue( false ) },
-					{ canActivate: jest.fn().mockReturnValue( of( false ) ) },
-					{ canActivate: jest.fn().mockImplementation( () => {throw new Error( 'Nope sync' );} ) },
-					{ canActivate: jest.fn().mockRejectedValue( new Error( 'Nope Promise' ) ) },
-					{ canActivate: jest.fn().mockReturnValue( throwError( () => new Error( 'Nope Observable' ) ) ) },
-				] as const;
 				const context = {} as any;
-				await mergeGuardResults( guards, context );
-				guards.forEach( g => {
+				await mergeGuardResults( allFailingGuardsTypes, context );
+				allFailingGuardsTypes.forEach( g => {
 					expect( g.canActivate ).toHaveBeenCalledTimes( 1 );
 				} );
 			} );
 			it( 'should waterfall properly', async () => {
-				const guards = [
-					{ canActivate: jest.fn().mockReturnValue( false ) },
-					{ canActivate: jest.fn().mockResolvedValue( false ) },
-					{ canActivate: jest.fn().mockReturnValue( of( false ) ) },
-					{ canActivate: jest.fn().mockImplementation( () => {throw new Error( 'Nope sync' );} ) },
-					{ canActivate: jest.fn().mockRejectedValue( new Error( 'Nope Promise' ) ) },
-					{ canActivate: jest.fn().mockReturnValue( throwError( () => new Error( 'Nope Observable' ) ) ) },
-				] as const;
 				const context = {} as any;
-				await mergeGuardResults( guards, context );
-				guards.forEach( ( g, i ) => {
+				await mergeGuardResults( allFailingGuardsTypes, context );
+				allFailingGuardsTypes.forEach( ( g, i ) => {
 					if( i > 0 ){
-						expect( g.canActivate ).toHaveBeenCalledAfter( guards[i - 1].canActivate );
+						expect( g.canActivate ).toHaveBeenCalledAfter( allFailingGuardsTypes[i - 1].canActivate );
 					}
 				} );
 			} );

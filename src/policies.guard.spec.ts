@@ -68,6 +68,13 @@ describe( 'PoliciesGuard', () => {
 		spyGetter.mockReturnValue( subject );
 		( spyGetter.mock as any ).subject = subject;
 	};
+	const checkGuardResult = ( expected: boolean ) => {
+		if( expected ){
+			return expect( guard.canActivate( context ) ).resolves.toBe( expected );
+		} else {
+			return expect( guard.canActivate( context ) ).rejects.toThrowWithMessage( ForbiddenException, /^Invalid authorizations: / );
+		}
+	};
 	describe( 'Individual handlers', () => {
 		it.each( [
 			[ true, undefined ],
@@ -86,43 +93,39 @@ describe( 'PoliciesGuard', () => {
 			if( typeof handler !== 'undefined' ){
 				addHandler( context.getHandler, handler );
 			}
-			if( expected ){
-				await expect( guard.canActivate( context ) ).resolves.toBe( expected );
-			} else {
-				await expect( guard.canActivate( context ) ).rejects.toThrowWithMessage( ForbiddenException, /^Invalid authorizations: / );
-			}
+			await checkGuardResult( expected );
 		} );
 		it( 'should throw if an invalid handler is passed', async () => {
 			addHandler( context.getHandler, { foo: 'bar' } );
 			await expect( guard.canActivate( context ) ).rejects.toThrowWithMessage( TypeError, /^Invalid handler type/ );
 		} );
 		describe( 'Async handlers', () => {
-			it.each( [
+			const asyncSamples = [
 				[ false, Promise.resolve( false ) ],
 				[ true, Promise.resolve( true ) ],
 				[ false, of( false ) ],
 				[ true, of( true ) ],
-			] )( 'should handle async injected handler (by class)', async ( expected, returned ) => {
-				jest.spyOn( InjectableHandler.prototype, 'handle' ).mockReturnValue( returned );
-				addHandler( context.getHandler, InjectableHandler );
-				if( expected ){
-					await expect( guard.canActivate( context ) ).resolves.toBe( expected );
-				} else {
-					await expect( guard.canActivate( context ) ).rejects.toThrowWithMessage( ForbiddenException, /^Invalid authorizations: / );
-				}
-			} );
-			it.each( [
-				[ false, Promise.resolve( false ) ],
-				[ true, Promise.resolve( true ) ],
-				[ false, of( false ) ],
-				[ true, of( true ) ],
-			] )( 'should handle async inline', async ( expected, returned ) => {
-				addHandler( context.getHandler, () => returned );
-				if( expected ){
-					await expect( guard.canActivate( context ) ).resolves.toBe( expected );
-				} else {
-					await expect( guard.canActivate( context ) ).rejects.toThrowWithMessage( ForbiddenException, /^Invalid authorizations: / );
-				}
+			] as const;
+			describe.each( [
+				[ 'Injected handler by class', ( returned: any ) => {
+					jest.spyOn( InjectableHandler.prototype, 'handle' ).mockReturnValue( returned );
+					return InjectableHandler;
+				} ],
+				[ 'Injected handler by string token', ( returned: any ) => {
+					module.get( providerString ).handle.mockReturnValue( returned );
+					return providerString;
+				} ],
+				[ 'Injected handler by symbol token', ( returned: any ) => {
+					module.get( providerSymbol ).handle.mockReturnValue( returned );
+					return providerSymbol;
+				} ],
+				[ 'Inline handler object', ( returned: any ) => ( { handle: jest.fn().mockReturnValue( returned ) } ) ],
+				[ 'Inline handler function', ( returned: any ) => jest.fn().mockReturnValue( returned ) ],
+			] )( '%s', ( _, setup ) => {
+				it.each( asyncSamples )( 'should be %p for async injected handler return %p (by class)', async ( expected, returned ) => {
+					addHandler( context.getHandler, setup( returned ) );
+					await checkGuardResult( expected );
+				} );
 			} );
 		} );
 		describe( 'Handlers invocation', () => {
