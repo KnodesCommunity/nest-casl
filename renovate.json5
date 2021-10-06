@@ -11,6 +11,10 @@
         "peerDependencies"
       ],
       "rangeStrategy": "auto"
+    },
+    { // `passport` is peer of `passport-jwt` & `@nestjs-passport`
+      "matchPackagePatterns": ["passport", "passport-jwt"],
+      "enabled": false
     }
   ]
 }
