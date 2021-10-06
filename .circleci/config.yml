@@ -43,13 +43,17 @@ jobs:
           command: npm run test:unit:ci
           when: always
       - store_artifacts:
-            path: ./junit.xml
+          path: ./junit.unit.xml
       - store_test_results:
-          path: ./junit.xml
+          path: ./junit.unit.xml
       - run:
           name: E2e tests
-          command: npm run test:e2e
+          command: npm run test:e2e:ci
           when: always
+      - store_artifacts:
+          path: ./junit.e2e.xml
+      - store_test_results:
+          path: ./junit.e2e.xml
   build:
     executor: node
     steps:
@@ -123,8 +127,7 @@ jobs:
 workflows:
   check: # Workflow ran on all branches except `main`
     unless:
-      equal:
-        - [ main, << pipeline.git.branch >> ]
+      equal: [ main, << pipeline.git.branch >> ]
     jobs:
       - install
       - test:
@@ -135,8 +138,7 @@ workflows:
             - install
   publish: # Workflow ran only on `main`
     when:
-      equal:
-        - [ main, << pipeline.git.branch >> ]
+      equal: [ main, << pipeline.git.branch >> ]
     jobs:
       - install
 

@@ -24,9 +24,10 @@
     "release": "standard-version",
     "release:ci": "./.circleci/release.sh",
     "test:unit": "jest --config ./jest.config.js",
-    "test:unit:ci": "npm run test:unit -- --all --ci --reporters=default --reporters=jest-junit",
+    "test:unit:ci": "JEST_JUNIT_OUTPUT_NAME=junit.unit.xml npm run test:unit -- --all --ci --reporters=default --reporters=jest-junit",
     "test:unit:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand --config ./jest.config.js -- ",
-    "test:e2e": "jest --config ./jest.config.e2e.js"
+    "test:e2e": "jest --config ./jest.config.e2e.js",
+    "test:e2e:ci": "JEST_JUNIT_OUTPUT_NAME=junit.e2e.xml npm run test:e2e -- --all --ci --reporters=default --reporters=jest-junit"
   },
   "commitlint": {
     "extends": [
