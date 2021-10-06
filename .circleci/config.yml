@@ -17,7 +17,7 @@ orbs:
   node: circleci/node@4.7
 
 jobs:
-  install:
+  npm-ci-install:
     executor: node
     steps:
       - checkout
@@ -31,6 +31,24 @@ jobs:
           key: v1--npm-ci-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - ~/.npm
+      - persist_to_workspace:
+          root: .
+          paths:
+            - '*'
+  npm-install:
+    executor: node
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1--npm-i--{{ .Branch }}--{{ checksum "package-lock.json" }}
+            - v1--npm-i--{{ .Branch }}
+            - v1--npm-i
+      - run: npm install
+      - save_cache:
+          key: v1--npm-i-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_mocules
       - persist_to_workspace:
           root: .
           paths:
@@ -207,6 +225,11 @@ jobs:
       - attach_workspace:
           at: .
       - run:
+          name: Config git
+          command: |
+            git config --global user.email "Scitizen-autosync-bot@users.noreply.github.com"
+            git config --global user.name "Scitizen-autosync-bot"
+      - run:
           name: Merge to develop
           command: |
             git remote set-url origin https://$CIRCLE_PROJECT_USERNAME:$GITHUB_AUTH_SECRET@github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
@@ -223,19 +246,16 @@ workflows:
     unless:
       matches: { pattern: "^renovate/", value: << pipeline.git.branch >> }
     jobs:
-      - install
+      - npm-install
 
       - test:
           requires:
-            - install
+            - npm-install
       - build:
           requires:
-            - install
+            - npm-install
 
       - git-merge-develop:
-          filters:
-            branches:
-              only: main
           requires:
             - test
             - build
@@ -246,38 +266,38 @@ workflows:
         - equal: [ develop, << pipeline.git.branch >> ]
         - matches: { pattern: "^renovate/", value: << pipeline.git.branch >> }
     jobs:
-      - install
+      - npm-ci-install
       - codeclimate-before
 
       - test:
           requires:
-            - install
+            - npm-ci-install
             - codeclimate-before
       - codeclimate-after:
           requires:
             - test
       - build:
           requires:
-            - install
+            - npm-ci-install
   publish: # Workflow ran only on `main` & `develop`
     when:
       or:
         - equal: [ main, << pipeline.git.branch >> ]
         - equal: [ develop, << pipeline.git.branch >> ]
     jobs:
-      - install
+      - npm-ci-install
       - codeclimate-before
 
       - test:
           requires:
-            - install
+            - npm-ci-install
             - codeclimate-before
       - codeclimate-after:
           requires:
             - test
       - build:
           requires:
-            - install
+            - npm-ci-install
 
       - check-releaseable:
           requires:
