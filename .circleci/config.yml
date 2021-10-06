@@ -7,6 +7,9 @@ executors:
   git:
     docker:
       - image: alpine/git
+  golang:
+    docker:
+      - image: circleci/golang:1.8
 
 # Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
 # See: https://circleci.com/docs/2.0/orb-intro/
@@ -68,18 +71,6 @@ jobs:
           root: .
           paths:
             - ./dist
-  docs:
-    executor: node
-    steps:
-      - attach_workspace:
-          at: .
-      - run: npm run doc:for-target-release
-      - store_artifacts:
-          path: ./docs
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./docs
   check-releaseable:
     executor: node
     steps:
@@ -98,7 +89,20 @@ jobs:
       - run:
           name: Check files
           command: npm publish --dry-run
-  publish-git-tag:
+  do-release:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run: npm run release -- --no-verify
+      - persist_to_workspace:
+          root: .
+          paths:
+            - docs
+            - CHANGELOG.md
+            - package.json
+            - package-lock.json
+  github-push:
     executor: git
     steps:
       - attach_workspace:
@@ -109,20 +113,44 @@ jobs:
             git config --global user.email "Scitizen-publish-bot@users.noreply.github.com"
             git config --global user.name "Scitizen-publish-bot"
       - run:
-          name: Push docs & tag
+          name: Push branch & tag
           command: |
-            git add --force docs
-            git commit -m "ci(release): publish v$(./.circleci/extract-release-version.sh)
-
-            [skip ci]"
             git remote set-url origin https://$CIRCLE_PROJECT_USERNAME:$GITHUB_AUTH_SECRET@github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
             git push --follow-tags --set-upstream origin $CIRCLE_BRANCH
-  publish-npm:
+  github-release:
+    executor: golang
+    steps:
+      - attach_workspace:
+          at: .
+      - restore_cache:
+          keys:
+            - go-mod-{{ .Branch }}
+            - go-mod-{{ .Branch }}
+            - go-mod
+      - run:
+          name: Get GHR
+          command: go get github.com/tcnksm/ghr
+      - save_cache:
+          key: go-mod-{{ .Branch }}
+          paths:
+            - /go/pkg/mod
+      - run:
+          name: Publish GitHub release
+          command: |
+            VERSION=$(cat ./VERSION)
+            # ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/
+  npm-publish:
     executor: node
     steps:
       - attach_workspace:
           at: .
-      - run: echo "TODO"
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ./.npmrc
+      - run:
+          name: Publish package
+          command: |
+            # npm publish
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -168,15 +196,16 @@ workflows:
           type: approval
           requires:
             - check-releaseable
-
-      - docs:
+      - do-release:
           requires:
             - Confirm new release
-      - publish-npm:
+      
+      - npm-publish:
           requires:
-            - Confirm new release
-
-      - publish-git-tag:
+            - do-release
+      - github-push:
           requires:
-            - docs
-            - publish-npm
+            - do-release
+      - github-release:
+          requires:
+            - do-release

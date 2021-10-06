@@ -36,8 +36,9 @@
   "standard-version": {
     "releaseCommitMessageFormat": "chore(release): {{currentTag}}\n\n[skip ci]",
     "scripts": {
-      "postchangelog": "npm run doc -- --gitRevision $(node -e \"console.log('v' + require('./package.json').version)\")",
-      "precommit": "git add --force docs"
+      "postchangelog": "npm run doc -- --gitRevision $(cat ./VERSION)",
+      "precommit": "git add --force docs",
+      "prerelease": "echo $(node -e \"console.log('v' + require('./package.json').version)\") > ./VERSION"
     }
   },
   "files": [
