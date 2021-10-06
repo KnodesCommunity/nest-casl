@@ -93,7 +93,7 @@ jobs:
                 --url https://circleci.com/api/v2/workflow/$CIRCLE_WORKFLOW_ID/cancel \
                 --header "Circle-Token: ${CIRCLE_TOKEN}"
              else
-              echo "Would publish $(npm run ci:get-target-release-version)"
+              echo "Would publish $(npm run --silent ci:get-target-release-version)"
             fi
       - run:
           name: Check files
@@ -112,7 +112,7 @@ jobs:
           name: Push docs & tag
           command: |
             git add --force docs
-            git commit -m "ci(release): publish v$(npm run ci:get-target-release-version)
+            git commit -m "ci(release): publish v$(npm run --silent ci:get-target-release-version)
 
             [skip ci]"
             git remote set-url origin https://$CIRCLE_PROJECT_USERNAME:$GITHUB_AUTH_SECRET@github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
