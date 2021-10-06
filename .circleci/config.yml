@@ -26,11 +26,11 @@ jobs:
             - node-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
             - node-cache-{{ .Branch }}
             - node-cache
-      - run: npm install
+      - run: npm ci
       - save_cache:
           key: node-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
-            - node_modules
+            - ~/.npm
       - persist_to_workspace:
           root: .
           paths:
@@ -48,9 +48,9 @@ jobs:
           when: always
       - store_artifacts:
           path: ./junit.unit.xml
-      - store_artifacts:
-          path: ./junit.unit.xml
       - store_test_results:
+          path: ./junit.unit.xml
+      - store_artifacts:
           path: ./coverage
 
       - run:
@@ -78,6 +78,13 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+      - run:
+          name: Make script executable
+          command: chmod +x ./.circleci/release-type.sh
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./.circleci/release-type.sh
       - run:
           name: Maybe abort ci
           command: |
