@@ -1,6 +1,6 @@
 {
   "name": "@scitizen/nest-casl",
-  "version": "0.0.2-next.0",
+  "version": "0.0.2-next.1",
   "description": "A module for managing authorization in your nest application, using casl.",
   "license": "MIT",
   "engines": {

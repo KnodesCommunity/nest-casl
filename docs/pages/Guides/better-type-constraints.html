@@ -99,7 +99,7 @@ details.code-block[open] summary::before {
 					<h1>Define the ability type</h1>
 				</a>
 				<p>Let&#39;s configure our ability types:</p>
-				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/v0.0.2-next.0/test/demo/better-types/ability.ts#L1-L6">./test/demo/better-types/ability.ts#1~6</a></p>
+				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/v0.0.2-next.1/test/demo/better-types/ability.ts#L1-L6">./test/demo/better-types/ability.ts#1~6</a></p>
 						<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Ability</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@casl/ability&#039;</span><span style="color: #000000">;</span>
 
 <span style="color: #AF00DB">export</span><span style="color: #000000"> </span><span style="color: #0000FF">type</span><span style="color: #000000"> </span><span style="color: #267F99">MyAbilities</span><span style="color: #000000"> =</span>
@@ -109,7 +109,7 @@ details.code-block[open] summary::before {
 </code></pre>
 				</div></p>
 				<p>Using <code>MyAbility</code>, we can&#39;t pass anything to <code>can</code> or <code>cannot</code>: types are constrained.</p>
-				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/v0.0.2-next.0/test/demo/better-types/ability.typecheck.e2e-spec.ts#L1-L12">./test/demo/better-types/ability.typecheck.e2e-spec.ts#1~12</a></p>
+				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/v0.0.2-next.1/test/demo/better-types/ability.typecheck.e2e-spec.ts#L1-L12">./test/demo/better-types/ability.typecheck.e2e-spec.ts#1~12</a></p>
 						<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">expectTypeOf</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;expect-type&#039;</span><span style="color: #000000">;</span>
 
 <span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">MyAbility</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;./ability&#039;</span><span style="color: #000000">;</span>
@@ -132,7 +132,7 @@ details.code-block[open] summary::before {
 					<h2>With the <a href="../../interfaces/CaslAbilityFactory.html"><code>CaslAbilityFactory</code></a></h2>
 				</a>
 				<p>Let&#39;s now use this type in your <a href="../../interfaces/CaslAbilityFactory.html"><code>CaslAbilityFactory</code></a>:</p>
-				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/v0.0.2-next.0/test/demo/better-types/ability-factory.service.ts#L1-L19">./src/ability-factory.service.ts</a></p>
+				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/v0.0.2-next.1/test/demo/better-types/ability-factory.service.ts#L1-L19">./src/ability-factory.service.ts</a></p>
 						<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">AbilityBuilder</span><span style="color: #000000">, </span><span style="color: #001080">PureAbility</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@casl/ability&#039;</span><span style="color: #000000">;</span>
 <span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Injectable</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@nestjs/common&#039;</span><span style="color: #000000">;</span>
 
@@ -158,7 +158,7 @@ details.code-block[open] summary::before {
 					<h2>With decorators</h2>
 				</a>
 				<p>You can pass your ability as a type parameter to your decorators to constraint your <code>action</code>s and <code>subject</code>s:</p>
-				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/v0.0.2-next.0/test/demo/better-types/test.controller.ts#L1-L21">./src/test.controller.ts</a></p>
+				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/v0.0.2-next.1/test/demo/better-types/test.controller.ts#L1-L21">./src/test.controller.ts</a></p>
 						<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Controller</span><span style="color: #000000">, </span><span style="color: #001080">Get</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@nestjs/common&#039;</span><span style="color: #000000">;</span>
 
 <span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Policy</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@scitizen/nest-casl&#039;</span><span style="color: #000000">;</span>
@@ -183,7 +183,7 @@ details.code-block[open] summary::before {
 </code></pre>
 				</div></p>
 				<p>But the boring part here is that you have to pass your ability type to <strong>every</strong> decorator in order to constrain them. Hopefully, you can solve this:</p>
-				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/v0.0.2-next.0/test/demo/better-types/my-policies.ts#L1-L5">./src/my-policies.ts</a></p>
+				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/v0.0.2-next.1/test/demo/better-types/my-policies.ts#L1-L5">./src/my-policies.ts</a></p>
 						<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">bindPolicyDecorators</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@scitizen/nest-casl&#039;</span><span style="color: #000000">;</span>
 
 <span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">MyAbility</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;./ability&#039;</span><span style="color: #000000">;</span>
@@ -192,7 +192,7 @@ details.code-block[open] summary::before {
 </code></pre>
 				</div></p>
 				<p>Then, simply enjoy type contraints !</p>
-				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/v0.0.2-next.0/test/demo/better-types/test-bound.controller.ts#L1-L26">./src/test-bound.controller.ts</a></p>
+				<p><div class="code-block"><p style="margin-bottom: 0;">From <a href="https://github.com/Scitizen/nest-casl/blob/v0.0.2-next.1/test/demo/better-types/test-bound.controller.ts#L1-L26">./src/test-bound.controller.ts</a></p>
 						<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">Controller</span><span style="color: #000000">, </span><span style="color: #001080">Get</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;@nestjs/common&#039;</span><span style="color: #000000">;</span>
 
 <span style="color: #AF00DB">import</span><span style="color: #000000"> { </span><span style="color: #001080">MyPolicies</span><span style="color: #000000"> } </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;./my-policies&#039;</span><span style="color: #000000">;</span>
