@@ -37,3 +37,5 @@ junit*.xml
 coverage
 VERSION
 TEST_STATUS
+
+.eslintcache
