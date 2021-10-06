@@ -48,8 +48,10 @@ jobs:
           when: always
       - store_artifacts:
           path: ./junit.unit.xml
-      - store_test_results:
+      - store_artifacts:
           path: ./junit.unit.xml
+      - store_test_results:
+          path: ./coverage
 
       - run:
           name: E2e tests
