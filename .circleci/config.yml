@@ -79,21 +79,14 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: Make script executable
-          command: chmod +x ./.circleci/release-type.sh
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./.circleci/release-type.sh
-      - run:
           name: Maybe abort ci
           command: |
-            if ! ./.circleci/release-type.sh; then
+            if ! ./scripts/ci/release-type.sh; then
               curl --request POST \
                 --url https://circleci.com/api/v2/workflow/$CIRCLE_WORKFLOW_ID/cancel \
                 --header "Circle-Token: ${CIRCLE_TOKEN}"
             else
-              echo "Should release $(./.circleci/release-type.sh)"
+              echo "Should release $(./scripts/ci/release-type.sh)"
             fi
       - run:
           name: Check files
@@ -111,7 +104,7 @@ jobs:
       - run: 
           name: Run standard-version
           command: |
-            release_type="$(./.circleci/release-type.sh)"
+            release_type="$(./scripts/ci/release-type.sh)"
             if [ -z ${release_type} ]; then
               npm run release -- --no-verify
             else
