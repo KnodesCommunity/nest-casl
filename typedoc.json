@@ -26,6 +26,13 @@
                     }
                 ],
                 "title": "Guides"
+            },
+            {
+                "pages": [{
+                    "source": "./CHANGELOG.md",
+                    "title": "Changelog"
+                }],
+                "title": "Changelog"
             }
         ]
     },
