@@ -3,6 +3,7 @@
     "config:base",
     "npm:unpublishSafe"
   ],
+  "baseBranches": ["develop"],
   "rangeStrategy": "update-lockfile",
   "ignoreDeps": ["typedoc"],
   "packageRules": [
