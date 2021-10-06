@@ -12,7 +12,6 @@
     "build": "nest build",
     "build:watch": "npm run build -- --watch",
     "doc": "typedoc",
-    "doc:for-target-release": "npm run doc -- --gitRevision v$(./.circleci/extract-release-version.sh)",
     "format:pkg": "format-package --write",
     "lint": "eslint \"{,{src,test}/**/}*.{j,t}s\"",
     "lint:commit-message:current": "commitlint -E HUSKY_GIT_PARAMS",
@@ -21,7 +20,9 @@
     "postinstall:jest-extended": "cd node_modules/jest-extended && npm i --production --ignore-scripts",
     "precommit": "npm run lint && npm run test:unit && npm run test:e2e && npm run build && npm run doc",
     "prepare": "husky install",
-    "release": "standard-version -a",
+    "release:do": "standard-version -a",
+    "release:trigger": "git commit --allow-empty -m \"ci(release): trigger release\"",
+    "release:trigger:alpha": "git commit --allow-empty -m \"ci(release): trigger alpha release\"",
     "test:unit": "jest --config ./jest.config.js",
     "test:unit:ci": "JEST_JUNIT_OUTPUT_NAME=junit.unit.xml npm run test:unit -- --all --ci --reporters=default --reporters=jest-junit",
     "test:unit:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand --config ./jest.config.js -- ",
@@ -36,9 +37,9 @@
   "standard-version": {
     "releaseCommitMessageFormat": "chore(release): {{currentTag}}\n\n[skip ci]",
     "scripts": {
-      "postchangelog": "npm run doc -- --gitRevision $(cat ./VERSION)",
+      "postchangelog": "npm run doc -- --gitRevision $(node -e \"console.log('v' + require('./package.json').version)\")",
       "precommit": "git add --force docs",
-      "prerelease": "echo $(node -e \"console.log('v' + require('./package.json').version)\") > ./VERSION"
+      "postbump": "echo $(node -e \"console.log('v' + require('./package.json').version)\") > ./VERSION"
     }
   },
   "files": [

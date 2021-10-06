@@ -79,12 +79,12 @@ jobs:
       - run:
           name: Maybe abort ci
           command: |
-            if ! npm run ci:get-target-release-version; then
+            if ! ./.circleci/release-type.sh; then
               curl --request POST \
                 --url https://circleci.com/api/v2/workflow/$CIRCLE_WORKFLOW_ID/cancel \
                 --header "Circle-Token: ${CIRCLE_TOKEN}"
-             else
-              echo "Would publish $(./.circleci/extract-release-version.sh)"
+            else
+              echo "Should release $(./.circleci/release-type.sh)"
             fi
       - run:
           name: Check files
@@ -99,7 +99,15 @@ jobs:
           command: |
             git config --global user.email "Scitizen-publish-bot@users.noreply.github.com"
             git config --global user.name "Scitizen-publish-bot"
-      - run: npm run release -- --no-verify
+      - run: 
+          name: Run standard-version
+          command: |
+            release_type="$(./.circleci/release-type.sh)"
+            if [ -z ${release_type} ]; then
+              npm run release -- --no-verify
+            else
+              npm run release -- --prerelease ${release_type} --no-verify
+            fi
       - persist_to_workspace:
           root: .
           paths:
@@ -145,7 +153,7 @@ jobs:
           name: Publish GitHub release
           command: |
             VERSION=$(cat ./VERSION)
-            # ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/
+            # ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./
   npm-publish:
     executor: node
     steps:
