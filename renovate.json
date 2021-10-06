@@ -4,6 +4,7 @@
     "npm:unpublishSafe"
   ],
   "rangeStrategy": "update-lockfile",
+  "ignoreDeps": ["typedoc"],
   "packageRules": [
     {
       "matchDepTypes": [
