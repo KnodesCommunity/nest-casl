@@ -11,9 +11,8 @@
   "scripts": {
     "build": "nest build",
     "build:watch": "npm run build -- --watch",
-    "ci:get-target-release-version": "sh ./.circleci/extract-release-version.sh",
     "doc": "typedoc",
-    "doc:for-current-version": "npm run doc -- --gitRevision v$(npm run --silent ci:get-target-release-version)",
+    "doc:for-target-release": "npm run doc -- --gitRevision v$(./.circleci/extract-release-version.sh)",
     "format:pkg": "format-package --write",
     "lint": "eslint \"{,{src,test}/**/}*.{j,t}s\"",
     "lint:commit-message:current": "commitlint -E HUSKY_GIT_PARAMS",
@@ -23,7 +22,6 @@
     "precommit": "npm run lint && npm run test:unit && npm run test:e2e && npm run build && npm run doc",
     "prepare": "husky install",
     "release:do": "standard-version",
-    "release:ci": "./.circleci/release.sh",
     "test:unit": "jest --config ./jest.config.js",
     "test:unit:ci": "JEST_JUNIT_OUTPUT_NAME=junit.unit.xml npm run test:unit -- --all --ci --reporters=default --reporters=jest-junit",
     "test:unit:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand --config ./jest.config.js -- ",
