@@ -1,6 +1,6 @@
 {
   "name": "@scitizen/nest-casl",
-  "version": "0.0.1-alpha1",
+  "version": "0.0.2",
   "description": "A module for managing authorization in your nest application, using casl.",
   "license": "MIT",
   "engines": {
@@ -12,7 +12,7 @@
     "build": "nest build",
     "build:watch": "npm run build -- --watch",
     "doc": "typedoc",
-    "doc:for-current-version": "npm run doc -- --gitRevision v$(node -e \"console.log(require('./package.json').version)\")",
+    "doc:for-current-version": "npm run doc -- --gitRevision v$(./.circleci/extract-release-version.sh)",
     "format:pkg": "format-package --write",
     "lint": "eslint \"{,{src,test}/**/}*.{j,t}s\"",
     "lint:commit-message:current": "commitlint -E HUSKY_GIT_PARAMS",
@@ -22,6 +22,7 @@
     "precommit": "npm run lint && npm run test:unit && npm run test:e2e && npm run build && npm run doc",
     "prepare": "husky install",
     "release": "standard-version",
+    "release:ci": "./.circleci/release.sh",
     "test:unit": "jest --config ./jest.config.js",
     "test:unit:ci": "npm run test:unit -- --all --ci --reporters=default --reporters=jest-junit",
     "test:unit:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand --config ./jest.config.js -- ",

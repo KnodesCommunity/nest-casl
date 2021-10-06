@@ -12,7 +12,6 @@ executors:
 # See: https://circleci.com/docs/2.0/orb-intro/
 orbs:
   node: circleci/node@4.7
-  npm-publisher: uraway/npm-publisher@0.2.0
 
 jobs:
   install:
@@ -43,26 +42,57 @@ jobs:
           name: Unit tests
           command: npm run test:unit:ci
           when: always
+      - store_artifacts:
+            path: ./junit.xml
       - store_test_results:
           path: ./junit.xml
       - run:
           name: E2e tests
           command: npm run test:e2e
           when: always
-  build-artifacts:
+  build:
     executor: node
     steps:
       - attach_workspace:
           at: .
-      - run: |
-          npm run build
-          npm run doc:for-current-version
+      - run: npm run build
+      - store_artifacts:
+          path: ./dist
       - persist_to_workspace:
           root: .
           paths:
             - ./dist
+  docs:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run: npm run doc:for-current-version
+      - store_artifacts:
+          path: ./docs
+      - persist_to_workspace:
+          root: .
+          paths:
             - ./docs
-  publish-docs:
+  check-releaseable:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Maybe abort ci
+          command: |
+            if ! ./.circleci/extract-release-message.sh; then
+              curl --request POST \
+                --url https://circleci.com/api/v2/workflow/$CIRCLE_WORKFLOW_ID/cancel \
+                --header "Circle-Token: ${CIRCLE_TOKEN}"
+             else
+              echo "Would publish $(./.circleci/extract-release-message.sh)"
+            fi
+      - run:
+          name: Check files
+          command: npm publish --dry-run
+  publish-git-tag:
     executor: git
     steps:
       - attach_workspace:
@@ -73,56 +103,72 @@ jobs:
             git config --global user.email "Scitizen-publish-bot@users.noreply.github.com"
             git config --global user.name "Scitizen-publish-bot"
       - run:
-          name: Publish new docs
+          name: Push docs & tag
           command: |
             git add --force docs
-            git commit -m "Rebuild docs
+            git commit --amend -m "ci(release): publish v$(./.circleci/extract-release-message.sh)
 
             [skip ci]"
             git remote set-url origin https://$CIRCLE_PROJECT_USERNAME:$GITHUB_AUTH_SECRET@github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
-            git push --set-upstream origin $CIRCLE_BRANCH
+            git push --follow-tags --set-upstream origin $CIRCLE_BRANCH
+  publish-npm:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run: echo "TODO"
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  publish:
-    # triggers:
-    #   - schedule:
-    #       filters:
-    #         branches:
-    #           only:
-    #             - master
-    #             - main
+  check: # Workflow ran on all branches except `main`
+    unless:
+      equal:
+        - [ main, << pipeline.git.branch >> ]
     jobs:
       - install
       - test:
           requires:
             - install
-      - build-artifacts:
+      - build:
           requires:
             - install
-      - publish-docs:
+  publish: # Workflow ran only on `main`
+    when:
+      equal:
+        - [ main, << pipeline.git.branch >> ]
+    jobs:
+      - install
+
+      - test:
           requires:
-            - build-artifacts
-            - test
-      - hold:
-          type: approval
+            - install
+      - build:
+          requires:
+            - install
+
+      - check-releaseable:
           filters:
             branches:
               only:
                 - master
                 - main
           requires:
-            - build-artifacts
+            - build
             - test
-      - npm-publisher/publish-from-package-version:
+      - Confirm new release:
+          type: approval
           requires:
-            - hold
-          # Configuration from https://circleci.com/developer/orbs/orb/uraway/npm-publisher
-          package-path: .
-          pre-publish-steps:
-            - attach_workspace:
-                at: .
-          post-publish-steps:
-          publish-token-variable: NPM_TOKEN
-          push-git-tag: true
+            - Check files
+
+      - docs:
+          requires:
+            - Confirm new release
+      - publish-npm:
+          requires:
+            - Confirm new release
+
+      - publish-git-tag:
+          requires:
+            - docs
+            - publish-npm
