@@ -11,8 +11,9 @@
   "scripts": {
     "build": "nest build",
     "build:watch": "npm run build -- --watch",
+    "ci:get-target-release-version": "sh ./.circleci/extract-release-version.sh",
     "doc": "typedoc",
-    "doc:for-current-version": "npm run doc -- --gitRevision v$(./.circleci/extract-release-version.sh)",
+    "doc:for-current-version": "npm run doc -- --gitRevision v$(sh ./.circleci/extract-release-version.sh)",
     "format:pkg": "format-package --write",
     "lint": "eslint \"{,{src,test}/**/}*.{j,t}s\"",
     "lint:commit-message:current": "commitlint -E HUSKY_GIT_PARAMS",
