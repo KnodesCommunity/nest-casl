@@ -7,15 +7,25 @@ const { orGuard, mergeGuardResults } = orGuardModule;
 
 describe( 'OrGuard', () => {
 	describe( 'Multiple guards result merging', () => {
+		const fakeGuards = ( returnValue: any[] ): Array<jest.Mocked<CanActivate>> => returnValue
+			.map( r => typeof r === 'function' ?
+				{ canActivate: jest.fn().mockImplementation( r ) } :
+				{ canActivate: jest.fn().mockReturnValue( r ) } );
+		const expectGuardsCalledInOrder = ( context: any, ...guards: Array<jest.Mocked<CanActivate>> ) => {
+			guards.forEach( ( g, i ) => {
+				expect( g.canActivate ).toHaveBeenCalledTimes( 1 );
+				expect( g.canActivate ).toHaveBeenCalledWith( context );
+				if( i > 0 ){
+					expect( g.canActivate ).toHaveBeenCalledAfter( guards[i - 1].canActivate as any );
+				}
+			} );
+		};
+
 		describe( 'Check order', () => {
-			const allFailingGuardsTypes = [
-				{ canActivate: jest.fn().mockReturnValue( false ) },
-				{ canActivate: jest.fn().mockResolvedValue( false ) },
-				{ canActivate: jest.fn().mockReturnValue( of( false ) ) },
-				{ canActivate: jest.fn().mockImplementation( () => {throw new Error( 'Nope sync' );} ) },
-				{ canActivate: jest.fn().mockRejectedValue( new Error( 'Nope Promise' ) ) },
-				{ canActivate: jest.fn().mockReturnValue( throwError( () => new Error( 'Nope Observable' ) ) ) },
-			] as const;
+			const allFailingGuardsTypes = fakeGuards( [
+				false, Promise.resolve( false ), of( false ),
+				() => {throw new Error( 'Nope sync' );}, Promise.reject( new Error( 'Nope Promise' ) ), throwError( () => new Error( 'Nope Observable' ) ),
+			] );
 			it( 'should handle every output types', async () => {
 				const context = {} as any;
 				await mergeGuardResults( allFailingGuardsTypes, context );
@@ -28,84 +38,52 @@ describe( 'OrGuard', () => {
 				await mergeGuardResults( allFailingGuardsTypes, context );
 				allFailingGuardsTypes.forEach( ( g, i ) => {
 					if( i > 0 ){
-						expect( g.canActivate ).toHaveBeenCalledAfter( allFailingGuardsTypes[i - 1].canActivate );
+						expect( g.canActivate ).toHaveBeenCalledAfter( allFailingGuardsTypes[i - 1].canActivate as any );
 					}
 				} );
 			} );
 		} );
 		describe( 'All success', () => {
 			it( 'should pass if 2 guards passes', async () => {
-				const guards = [
-					{ canActivate: jest.fn().mockReturnValue( of( true ) ) },
-					{ canActivate: jest.fn().mockReturnValue( of( true ) ) },
-				] as const;
+				const guards = fakeGuards( [ of( true ), of( true ) ] );
 				const context = {} as any;
 				await expect( mergeGuardResults( guards, context ) ).resolves.toEqual( true );
 			} );
 			it( 'should do correct calls in correct order', async () => {
-				const guards = [
-					{ canActivate: jest.fn().mockReturnValue( of( true ) ) },
-					{ canActivate: jest.fn().mockReturnValue( of( true ) ) },
-				] as const;
+				const guards = fakeGuards( [ of( true ), of( true ) ] );
 				const context = {} as any;
 				await mergeGuardResults( guards, context );
-				expect( guards[0].canActivate ).toHaveBeenCalledTimes( 1 );
-				expect( guards[0].canActivate ).toHaveBeenCalledWith( context );
+				expectGuardsCalledInOrder( context, guards[0] );
 				expect( guards[1].canActivate ).not.toHaveBeenCalled();
 			} );
 		} );
 		describe( 'Some success', () => {
 			it( 'should pass if at least 1 guard pass', async () => {
-				const guards = [
-					{ canActivate: jest.fn().mockReturnValue( of( false ) ) },
-					{ canActivate: jest.fn().mockReturnValue( of( true ) ) },
-				] as const;
+				const guards = fakeGuards( [ of( false ), of( true ) ] );
 				const context = {} as any;
 				await expect( mergeGuardResults( guards, context ) ).resolves.toEqual( true );
 			} );
 			it( 'should do correct calls in correct order', async () => {
-				const guards = [
-					{ canActivate: jest.fn().mockReturnValue( of( false ) ) },
-					{ canActivate: jest.fn().mockReturnValue( of( true ) ) },
-					{ canActivate: jest.fn().mockReturnValue( of( true ) ) },
-				] as const;
+				const guards = fakeGuards( [ of( false ), of( true ), of( true ) ] );
 				const context = {} as any;
 				await expect( mergeGuardResults( guards, context ) ).resolves.toEqual( true );
-				expect( guards[0].canActivate ).toHaveBeenCalledTimes( 1 );
-				expect( guards[0].canActivate ).toHaveBeenCalledWith( context );
-				expect( guards[1].canActivate ).toHaveBeenCalledTimes( 1 );
-				expect( guards[1].canActivate ).toHaveBeenCalledWith( context );
-				expect( guards[1].canActivate ).toHaveBeenCalledAfter( guards[0].canActivate );
+				expectGuardsCalledInOrder( context, guards[0], guards[1] );
 				expect( guards[2].canActivate ).not.toHaveBeenCalled();
 			} );
 		} );
 		describe( 'All fail', () => {
 			it( 'should fail with false if first guard returns false', async () => {
-				const guards = [
-					{ canActivate: jest.fn().mockReturnValue( of( false ) ) },
-					{ canActivate: jest.fn().mockReturnValue( of( false ) ) },
-				] as const;
+				const guards = fakeGuards( [ of( false ), of( false ) ] );
 				const context = {} as any;
 				await expect( mergeGuardResults( guards, context ) ).resolves.toEqual( false );
-				expect( guards[0].canActivate ).toHaveBeenCalledTimes( 1 );
-				expect( guards[0].canActivate ).toHaveBeenCalledWith( context );
-				expect( guards[1].canActivate ).toHaveBeenCalledTimes( 1 );
-				expect( guards[1].canActivate ).toHaveBeenCalledWith( context );
-				expect( guards[1].canActivate ).toHaveBeenCalledAfter( guards[0].canActivate );
+				expectGuardsCalledInOrder( context, guards[0], guards[1] );
 			} );
 			it( 'should fail with error if first guard throws', async () => {
-				const error = new Error( 'Test errpr' );
-				const guards = [
-					{ canActivate: jest.fn().mockReturnValue( throwError( () => error ) ) },
-					{ canActivate: jest.fn().mockReturnValue( of( false ) ) },
-				] as const;
+				const error = new Error( 'Test error' );
+				const guards = fakeGuards( [ throwError( () => error ), of( false ) ] );
 				const context = {} as any;
 				await expect( mergeGuardResults( guards, context ) ).rejects.toEqual( error );
-				expect( guards[0].canActivate ).toHaveBeenCalledTimes( 1 );
-				expect( guards[0].canActivate ).toHaveBeenCalledWith( context );
-				expect( guards[1].canActivate ).toHaveBeenCalledTimes( 1 );
-				expect( guards[1].canActivate ).toHaveBeenCalledWith( context );
-				expect( guards[1].canActivate ).toHaveBeenCalledAfter( guards[0].canActivate );
+				expectGuardsCalledInOrder( context, guards[0], guards[1] );
 			} );
 		} );
 		describe( 'Invalid cases', () => {

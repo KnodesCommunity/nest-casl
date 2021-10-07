@@ -22,7 +22,7 @@ describe( 'Unauthenticated using guard', () => {
 	describe( 'Infix', () => {
 		// #region infix
 		@Controller( '/infix/global-policy' )
-		@Policy( true )
+		@Policy( () => true )
 			.usingGuard( TestGuard )
 		class GlobalPolicyController {
 			@Get()
@@ -34,7 +34,7 @@ describe( 'Unauthenticated using guard', () => {
 		@Controller( '/infix/method-policy' )
 		class MethodPolicyController {
 			@Get( 'unauthorized' )
-			@Policy( true )
+			@Policy( () => true )
 				.usingGuard( TestGuard )
 			public unauthorized(){
 				return 'SHOULD NEVER HAPPEN';
@@ -106,7 +106,7 @@ describe( 'Unauthenticated using guard', () => {
 		const GuardWithTest = bindPolicyDecorators( TestGuard );
 
 		@Controller( '/prefix/global-policy' )
-		@GuardWithTest.Policy( true )
+		@GuardWithTest.Policy( () => true )
 		class GlobalPolicyController {
 			@Get()
 			public unauthorized(){
@@ -117,7 +117,7 @@ describe( 'Unauthenticated using guard', () => {
 		@Controller( '/prefix/method-policy' )
 		class MethodPolicyController {
 			@Get( 'unauthorized' )
-			@GuardWithTest.Policy( true )
+			@GuardWithTest.Policy( () => true )
 			public unauthorized(){
 				return 'SHOULD NEVER HAPPEN';
 			}

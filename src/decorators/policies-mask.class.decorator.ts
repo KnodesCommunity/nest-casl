@@ -54,11 +54,9 @@ export function PoliciesMask<TMask extends PolicyDescriptorMask<TAbility>, TAbil
 		const maskKeys = Object.keys( mask );
 		const allMethodsToDecorate = uniq( [ ...methods, ...maskKeys ].filter( v => v !== '*' ) ) as any[];
 		allMethodsToDecorate.forEach( method => {
-			if( mask[method] !== true ) {
-				const policyToApply: PolicyDescriptor<TAbility> = mask[method] ?? mask['*'] ?? { handle: () => true };
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- This is asserted in {@link Policy}.
-				Policy.usingGuard( ...guards )( policyToApply )( target, method, getProtoChainPropertyDescriptor( target, method )! );
-			}
+			const policyToApply: PolicyDescriptor<TAbility> = mask[method] ?? mask['*'] ?? ( () => true );
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- This is asserted in {@link Policy}.
+			Policy.usingGuard( ...guards )( policyToApply )( target, method, getProtoChainPropertyDescriptor( target, method )! );
 		} );
 	} ) as BoundPoliciesMask<TMask, TAbility>;
 	described.usingGuard = ( ...guards ) => {
