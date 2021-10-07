@@ -10,5 +10,5 @@ if [ -z "${release_type}" ]; then
         echo ""
     fi
 else
-    echo "${$re}"
+    echo "${release_type}"
 fi
