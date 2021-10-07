@@ -219,7 +219,13 @@ jobs:
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ./.npmrc
       - run:
           name: Publish package
-          command: npm publish
+          command: |
+            release_type="$(bash ./scripts/ci/release-type.sh)"
+            if [ -z ${release_type} ]; then
+              npm publish
+            else
+              npm publish --tag ${release_type}
+            fi
   git-merge-develop:
     executor: git
     steps:
