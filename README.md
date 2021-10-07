@@ -6,16 +6,16 @@
 	<a href="https://casl.js.org/v5/en" target="_blank"><img src="https://casl.js.org/v5/51b9cc103e05f66c.png" height="150" alt="CASL Logo"></a>
 </p>
 
-<p align="center">A simple decorator-based way to check <a href="https://casl.js.org/v5/en" target="_blank">CASL abilities</a> on <a href="http://nodejs.org" target="_blank">NestJS</a> controllers.</p>
+<p align="center">A simple decorator-based way to check <a href="https://casl.js.org/v5/en" target="_blank">CASL abilities</a> on <a href="http://nestjs.com/" target="_blank">NestJS</a> controllers.</p>
 
 <p align="center">
-	<a href="https://github.com/Scitizen/nest-casl/issues" target="_blank"><img src="https://img.shields.io/github/issues/Scitizen/nest-casl" alt="GitHub issues"></a>
-	<a href="https://www.npmjs.com/package/@scitizen/nest-casl" target="_blank"><img src="https://img.shields.io/npm/v/@scitizen/nest-casl.svg" alt="NPM Version" /></a>
-	<a href="https://www.npmjs.com/package/@scitizen/nest-casl" target="_blank"><img src="https://img.shields.io/npm/l/@scitizen/nest-casl.svg" alt="Package License" /></a>
-	<a href="https://www.npmjs.com/package/@scitizen/nest-casl" target="_blank"><img src="https://img.shields.io/npm/dm/@scitizen/nest-casl.svg" alt="NPM Downloads" /></a>
-	<a href="https://circleci.com/gh/Scitizen/nest-casl/tree/main" target="_blank"><img src="https://img.shields.io/circleci/build/github/Scitizen/nest-casl/main" alt="CircleCI"></a>
-	<a href="https://codeclimate.com/github/Scitizen/nest-casl/maintainability"><img src="https://api.codeclimate.com/v1/badges/21cc8f69c9eac8d36aa9/maintainability" /></a>
-	<a href="https://codeclimate.com/github/Scitizen/nest-casl/test_coverage"><img src="https://api.codeclimate.com/v1/badges/21cc8f69c9eac8d36aa9/test_coverage" /></a>
+	<a href="https://github.com/Scitizen/nest-casl/issues" target="_blank"><img src="https://img.shields.io/github/issues/Scitizen/nest-casl" alt="GitHub issues" /></a>
+	<a href="https://www.npmjs.com/package/@scitizen/nest-casl" target="_blank"><img src="https://img.shields.io/npm/v/@scitizen/nest-casl.svg" alt="NPM version" /></a>
+	<a href="https://www.npmjs.com/package/@scitizen/nest-casl" target="_blank"><img src="https://img.shields.io/npm/dm/@scitizen/nest-casl.svg" alt="NPM downloads" /></a>
+	<a href="https://www.npmjs.com/package/@scitizen/nest-casl" target="_blank"><img src="https://img.shields.io/npm/l/@scitizen/nest-casl.svg" alt="License" /></a>
+	<a href="https://circleci.com/gh/Scitizen/nest-casl/tree/main" target="_blank"><img src="https://img.shields.io/circleci/build/github/Scitizen/nest-casl/main" alt="CircleCI" /></a>
+	<a href="https://codeclimate.com/github/Scitizen/nest-casl/maintainability"><img src="https://api.codeclimate.com/v1/badges/21cc8f69c9eac8d36aa9/maintainability" alt="CodeClimate maintainability" /></a>
+	<a href="https://codeclimate.com/github/Scitizen/nest-casl/test_coverage"><img src="https://api.codeclimate.com/v1/badges/21cc8f69c9eac8d36aa9/test_coverage" alt="CodeClimate test coverage" /></a>
 </p>
 
 ## Description

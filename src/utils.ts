@@ -2,6 +2,9 @@ import { Injectable, Type } from '@nestjs/common';
 import { isObject } from 'lodash';
 import { Observable, lastValueFrom } from 'rxjs';
 
+/**
+ * An observable, promise, or sync value.
+ */
 export type MaybeAsyncValue<T> = T | Promise<T> | Observable<T>;
 export const anyToPromise = <T>( fn: () => MaybeAsyncValue<T> ): Promise<T> => {
 	try {
