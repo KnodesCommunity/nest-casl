@@ -20,6 +20,7 @@
     "tsBuildInfoFile": "./dist/.tsbuildinfo"
   },
   "exclude": [
+    "test-utils",
     "**/*.spec.ts"
   ],
   "include": [

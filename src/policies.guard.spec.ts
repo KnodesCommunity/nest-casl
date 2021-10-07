@@ -6,6 +6,7 @@ import { CaslAbilityFactory } from './casl-ability.factory';
 import { addPolicyMetadata } from './decorators/proto-utils';
 
 import { PoliciesGuard } from './policies.guard';
+import { createFakeExecutionContext } from './test-utils';
 import { IPolicy } from './types';
 import { MaybeAsyncValue } from './utils';
 
@@ -40,14 +41,7 @@ describe( 'PoliciesGuard', () => {
 			],
 		} ).compile();
 
-		request = {};
-		context = {
-			switchToHttp: jest.fn().mockReturnValue( {
-				getRequest: jest.fn().mockReturnValue( request ),
-			} ),
-			getClass: jest.fn().mockReturnValue( {} ),
-			getHandler: jest.fn().mockReturnValue( {} ),
-		} as any;
+		( { request, context } = createFakeExecutionContext() );
 		guard = module.get( PoliciesGuard );
 		abilityFactory = module.get<MockCaslAbilityFactory>( CaslAbilityFactory );
 	} );
