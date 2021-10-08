@@ -34,6 +34,16 @@ npm install --save @scitizen/nest-casl
 Additionally, please make sure you have correct peer dependencies installed:
 
 <!-- PEER DEPS -->
+* [@casl/ability](https://www.npmjs.com/package/@casl/ability): `^5.0.0`
+* [@nestjs/common](https://www.npmjs.com/package/@nestjs/common): `^8.0.0`
+* [@nestjs/core](https://www.npmjs.com/package/@nestjs/core): `^8.0.0`
+* [lodash](https://www.npmjs.com/package/lodash): `^4.17.0`
+* [reflect-metadata](https://www.npmjs.com/package/reflect-metadata): `^0.1.13`
+* [rxjs](https://www.npmjs.com/package/rxjs): `^7.0.0`
+
+```sh
+npm install @casl/ability@^5.0.0 @nestjs/common@^8.0.0 @nestjs/core@^8.0.0 lodash@^4.17.0 reflect-metadata@^0.1.13 rxjs@^7.0.0
+```
 <!-- END PEER DEPS -->
 
 ## In a nutshell
