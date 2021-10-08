@@ -277,7 +277,7 @@ jobs:
             if ! [ -z "$(cat ./RELEASE_TYPE)" ]; then
               set -- "$@" --prerelease
             fi
-            gh release create "${VERSION}" --target ${CIRCLE_BRANCH}  --notes-file CHANGELOG.md --notes "${BODY}" "$@" ./{${ARCHIVE},package.json,package-lock.json,README.md,LICENSE,CHANGELOG.md}
+            gh release create "${VERSION}" --target ${CIRCLE_BRANCH}  --notes "${BODY}" "$@" ./{${ARCHIVE},package.json,package-lock.json,README.md,LICENSE,CHANGELOG.md}
   npm-publish:
     executor: node
     resource_class: small
