@@ -28,8 +28,13 @@ Use decorators everywhere to protect your controller methods.
 ## Installation
 
 ```bash
-npm install --save @scitizen/nest-casl @casl/ability
+npm install --save @scitizen/nest-casl
 ```
+
+Additionally, please make sure you have correct peer dependencies installed:
+
+<!-- PEER DEPS -->
+<!-- END PEER DEPS -->
 
 ## In a nutshell
 

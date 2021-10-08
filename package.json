@@ -23,6 +23,7 @@
     "build": "nest build",
     "build:watch": "npm run build -- --watch",
     "doc": "typedoc",
+    "doc:update-peer-deps": "node docs-source/plugin/peer-deps-list.js",
     "format:pkg": "format-package --write",
     "lint": "eslint \"{,{src,test}/**/}*.{j,t}s\"",
     "lint:commit-message:current": "commitlint -E HUSKY_GIT_PARAMS",
@@ -52,8 +53,8 @@
     "releaseCommitMessageFormat": "chore(release): {{currentTag}}\n\n[skip ci]",
     "scripts": {
       "postbump": "echo $(node -e \"console.log('v' + require('./package.json').version)\") > ./VERSION",
-      "postchangelog": "npm run doc -- --gitRevision $(node -e \"console.log('v' + require('./package.json').version)\")",
-      "precommit": "git add --force docs"
+      "postchangelog": "npm run doc:update-peer-deps && npm run doc -- --gitRevision $(cat ./VERSION)",
+      "precommit": "git add --force docs README.md"
     }
   },
   "peerDependencies": {
