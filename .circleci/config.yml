@@ -19,6 +19,7 @@ orbs:
 jobs:
   npm-ci-install:
     executor: node
+    resource_class: small
     steps:
       - checkout
       - restore_cache:
@@ -37,6 +38,7 @@ jobs:
             - '*'
   npm-install:
     executor: node
+    resource_class: small
     steps:
       - checkout
       - restore_cache:
@@ -55,6 +57,7 @@ jobs:
             - '*'
   codeclimate-before:
     executor: node
+    resource_class: small
     steps:
       - run:
           name: Setup Code Climate test-reporter
@@ -70,6 +73,7 @@ jobs:
           command: /tmp/cc-test-reporter before-build
   codeclimate-after:
     executor: node
+    resource_class: small
     steps:
       - attach_workspace:
           at: .
@@ -80,6 +84,7 @@ jobs:
           command: /tmp/cc-test-reporter after-build --coverage-input-type lcov --exit-code $(cat ./TEST_STATUS)
   test:
     executor: node
+    resource_class: small
     steps:
       - attach_workspace:
           at: .
@@ -113,6 +118,7 @@ jobs:
           path: ./junit.e2e.xml
   build:
     executor: node
+    resource_class: small
     steps:
       - attach_workspace:
           at: .
@@ -125,6 +131,7 @@ jobs:
             - ./dist
   check-releaseable:
     executor: node
+    resource_class: small
     steps:
       - attach_workspace:
           at: .
@@ -148,6 +155,7 @@ jobs:
           command: npm publish --dry-run
   do-release:
     executor: node
+    resource_class: small
     steps:
       - attach_workspace:
           at: .
@@ -176,6 +184,7 @@ jobs:
             - package-lock.json
   github-push:
     executor: git
+    resource_class: small
     steps:
       - attach_workspace:
           at: .
@@ -191,6 +200,7 @@ jobs:
             git push --follow-tags --set-upstream origin $CIRCLE_BRANCH
   github-release:
     executor: golang
+    resource_class: small
     steps:
       - attach_workspace:
           at: .
@@ -216,6 +226,7 @@ jobs:
             ghr -t ${GITHUB_AUTH_SECRET} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./*
   npm-publish:
     executor: node
+    resource_class: small
     steps:
       - attach_workspace:
           at: .
@@ -233,6 +244,7 @@ jobs:
             fi
   git-merge-develop:
     executor: git
+    resource_class: small
     steps:
       - attach_workspace:
           at: .
