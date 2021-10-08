@@ -37,6 +37,16 @@ type BoundPolicy<TAbility extends AnyAbilityLike> =
 	};
 const guardsList = Symbol( 'Guards list' );
 
+const guardsListToGuardArray = ( guards: GuardsList ) => guards
+	.map( g => UseGuards( ...( isArray( g ) ?
+		g.length > 1 ?
+			// If multiple guards in an array (`usingGuard([Foo, Bar])`, join them in an `OrGuard`)
+			[ orGuard( g ) ] :
+			// If single guard in an array, don't change
+			g :
+		// If single guard, use it directly
+		[ g ] ) ) );
+
 const applyPolicyGuards = <TAbility extends AnyAbilityLike>(
 	policy: PolicyDescriptor<TAbility>,
 	policyHost: any,
@@ -50,11 +60,7 @@ const applyPolicyGuards = <TAbility extends AnyAbilityLike>(
 		return UseGuards( PoliciesGuard )( ...target as [any] );
 	} else {
 		addPolicyMetadata( policy )( policyHost );
-		const guardsDecorators = guards.map( g => UseGuards( ...( isArray( g ) ?
-			g.length > 1 ?
-				[ orGuard( g ) ] :
-				g :
-			[ g ] ) ) );
+		const guardsDecorators = guardsListToGuardArray( guards );
 		const fullDecorator = applyDecorators(
 			...guardsDecorators,
 			UseGuards( PoliciesGuard ) );

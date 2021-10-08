@@ -5,6 +5,7 @@ import { of, throwError } from 'rxjs';
 import * as orGuardModule from './or.guard';
 const { orGuard, mergeGuardResults } = orGuardModule;
 
+beforeEach( () => jest.clearAllMocks() );
 describe( 'OrGuard', () => {
 	describe( 'Multiple guards result merging', () => {
 		const fakeGuards = ( returnValue: any[] ): Array<jest.Mocked<CanActivate>> => returnValue
@@ -36,11 +37,7 @@ describe( 'OrGuard', () => {
 			it( 'should waterfall properly', async () => {
 				const context = {} as any;
 				await mergeGuardResults( allFailingGuardsTypes, context );
-				allFailingGuardsTypes.forEach( ( g, i ) => {
-					if( i > 0 ){
-						expect( g.canActivate ).toHaveBeenCalledAfter( allFailingGuardsTypes[i - 1].canActivate as any );
-					}
-				} );
+				expectGuardsCalledInOrder( context, ...allFailingGuardsTypes );
 			} );
 		} );
 		describe( 'All success', () => {
