@@ -173,6 +173,11 @@ jobs:
             else
               npm run release:do -- --prerelease ${release_type} --no-verify
             fi
+      - run:
+          name: Prepare archive
+          command: |
+            ARCHIVE="$(npm pack --ignore-scripts --silent)"
+            echo "${ARCHIVE}" > ARCHIVE
       - persist_to_workspace:
           root: .
           paths:
@@ -183,6 +188,8 @@ jobs:
             - README.md
             - package.json
             - package-lock.json
+            - ARCHIVE
+            - '*.tgz'
   github-push:
     executor: git
     resource_class: small
@@ -264,8 +271,8 @@ jobs:
           name: Publish GitHub release
           command: |-
             #!/bin/bash
-            ARCHIVE="$(npm pack --ignore-scripts --silent)"
-            VERSION=$(cat ./VERSION)
+            ARCHIVE="$(cat ./ARCHIVE)"
+            VERSION="$(cat ./VERSION)"
             BODY="$(git diff HEAD^...HEAD CHANGELOG.md | sed '0,/^@@.*@@$/d' | grep -oP '^\+\K.*$' | sed '0,/^### \[.*$/d')"
             if ! [ -z "$(cat ./RELEASE_TYPE)" ]; then
               set -- "$@" --prerelease
