@@ -4,12 +4,12 @@ executors:
   node:
     docker:
       - image: cimg/node:lts
+  default:
+    docker:
+      - image: cimg/base:stable
   git:
     docker:
       - image: alpine/git
-  golang:
-    docker:
-      - image: circleci/golang:1.10
 
 # Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
 # See: https://circleci.com/docs/2.0/orb-intro/
@@ -199,31 +199,76 @@ jobs:
             git remote set-url origin https://$CIRCLE_PROJECT_USERNAME:$GITHUB_AUTH_SECRET@github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
             git push --follow-tags --set-upstream origin $CIRCLE_BRANCH
   github-release:
-    executor: golang
+    executor: default
     resource_class: small
     steps:
       - attach_workspace:
           at: .
-      - restore_cache:
-          keys:
-            - v1--go-mod-{{ .Branch }}
-            - v1--go-mod-{{ .Branch }}
-            - v1--go-mod
       - run:
-          name: Get GHR
-          command: go get github.com/tcnksm/ghr
-      - save_cache:
-          key: v1--go-mod--{{ .Branch }}
-          paths:
-            - /go/pkg/mod
+          name: Install GitHub CLI
+          command: | # From https://circleci.com/developer/orbs/orb/circleci/github-cli#orb-source
+            #!/bin/bash
+            # set smart sudo
+            if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
+
+            # Get auth token
+            [ -z "${GITHUB_AUTH_SECRET}" ] && echo "A GitHub token must be supplied. Check the \"token\" parameter." && exit 1
+            echo "export GITHUB_TOKEN=\"${GITHUB_AUTH_SECRET}\"" >> "$BASH_ENV"
+            # Define current platform
+            if [[ "$(uname -s)" == "Linux" && "$(uname -m)" == "x86_64" ]]; then
+              export SYS_ENV_PLATFORM=linux_x86
+            else
+              echo "This platform appears to be unsupported."
+              uname -a
+              exit 1
+            fi
+
+            # If not installed
+            if ! command -v gh >/dev/null 2>&1; then
+              GH_CLI_VERSION=2.0.0
+              echo "Installing the GitHub CLI"
+              case $SYS_ENV_PLATFORM in
+                linux_x86)
+                  curl -sSL "https://github.com/cli/cli/releases/download/v${GH_CLI_VERSION}/gh_${GH_CLI_VERSION}_linux_amd64.deb" -o "gh-cli.deb"
+                  $SUDO apt install ./gh-cli.deb
+                  rm gh-cli.deb
+                  ;;
+                *)
+                echo "This orb does not currently support your platform. If you believe it should, please consider opening an issue on the GitHub repository:"
+                echo "https://github.com/CircleCI-Public/github-cli-orb"
+                exit 1
+              ;;
+              esac
+              # Validate install.
+              echo
+              echo "GH CLI installed"
+              command -v gh
+            else
+              echo "GH CLI is already installed."
+            fi
+
+            # Authenticate
+            echo
+            echo "Authenticating GH CLI"
+            git config --global credential.https://github.com.helper ''
+            git config --global --add credential.https://github.com.helper '!'"$(which gh) auth git-credential"
+            gh auth status
+
+            # Configure
+            echo
+            echo "Disabling interactive prompts for GH CLI"
+            gh config set prompt disabled
       - run:
           name: Publish GitHub release
-          command: |
+          command: |-
+            #!/bin/bash
+            ARCHIVE="$(npm pack --ignore-scripts --silent)"
             VERSION=$(cat ./VERSION)
-            mkdir /tmp/release
-            cp -r ./{dist,src,package.json,package-lock.json,README.md,LICENSE,CHANGELOG.md} /tmp/release
-            cd /tmp/release
-            ghr -t ${GITHUB_AUTH_SECRET} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./*
+            BODY="$(git diff HEAD^...HEAD CHANGELOG.md | sed '0,/^@@.*@@$/d' | grep -oP '^\+\K.*$' | sed '0,/^### \[.*$/d')"
+            if ! [ -z "$(cat ./RELEASE_TYPE)" ]; then
+              set -- "$@" --prerelease
+            fi
+            gh release create "${VERSION}" --target ${CIRCLE_BRANCH}  --notes-file CHANGELOG.md --notes "${BODY}" "$@" ./{${ARCHIVE},package.json,package-lock.json,README.md,LICENSE,CHANGELOG.md}
   npm-publish:
     executor: node
     resource_class: small
