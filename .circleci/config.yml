@@ -180,6 +180,7 @@ jobs:
             - docs
             - VERSION
             - CHANGELOG.md
+            - README.md
             - package.json
             - package-lock.json
   github-push:
@@ -212,8 +213,9 @@ jobs:
             if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 
             # Get auth token
-            [ -z "${GITHUB_AUTH_SECRET}" ] && echo "A GitHub token must be supplied. Check the \"token\" parameter." && exit 1
-            echo "export GITHUB_TOKEN=\"${GITHUB_AUTH_SECRET}\"" >> "$BASH_ENV"
+            export GITHUB_TOKEN=${GITHUB_AUTH_SECRET}
+            [ -z "${GITHUB_TOKEN}" ] && echo "A GitHub token must be supplied." && exit 1
+            echo "export GITHUB_TOKEN=\"${GITHUB_TOKEN}\"" >> "$BASH_ENV"
             # Define current platform
             if [[ "$(uname -s)" == "Linux" && "$(uname -m)" == "x86_64" ]]; then
               export SYS_ENV_PLATFORM=linux_x86
