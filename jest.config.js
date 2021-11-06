@@ -2,6 +2,7 @@ module.exports = {
 	preset: 'ts-jest',
 	collectCoverageFrom: [
 		'src/**/*.(t|j)s',
+		'!**/test-utils/**',
 	],
 	coverageDirectory: './coverage',
 	moduleFileExtensions: [

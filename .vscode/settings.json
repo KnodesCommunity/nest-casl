@@ -1,0 +1,5 @@
+{
+    "jest.jestCommandLine": "./node_modules/.bin/jest --config jest.config.js",
+    "jest.autoRun": {"watch": true, "onStartup": ["all-tests"]},
+    "jest.showCoverageOnLoad": true
+}

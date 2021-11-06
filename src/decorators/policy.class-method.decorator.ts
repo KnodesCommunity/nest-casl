@@ -37,6 +37,37 @@ type BoundPolicy<TAbility extends AnyAbilityLike> =
 	};
 const guardsList = Symbol( 'Guards list' );
 
+const guardsListToGuardArray = ( guards: GuardsList ) => guards
+	.map( g => UseGuards( ...( isArray( g ) ?
+		g.length > 1 ?
+			// If multiple guards in an array (`usingGuard([Foo, Bar])`, join them in an `OrGuard`)
+			[ orGuard( g ) ] :
+			// If single guard in an array, don't change
+			g :
+		// If single guard, use it directly
+		[ g ] ) ) );
+
+const applyPolicyGuards = <TAbility extends AnyAbilityLike>(
+	policy: PolicyDescriptor<TAbility>,
+	policyHost: any,
+	guards: GuardsList,
+	target: Parameters<MethodDecorator | ClassDecorator>,
+) => {
+	if( policy === true ){
+		return;
+	} else if( policy === false ){
+		addPolicyMetadata( policy )( policyHost );
+		return UseGuards( PoliciesGuard )( ...target as [any] );
+	} else {
+		addPolicyMetadata( policy )( policyHost );
+		const guardsDecorators = guardsListToGuardArray( guards );
+		const fullDecorator = applyDecorators(
+			...guardsDecorators,
+			UseGuards( PoliciesGuard ) );
+		fullDecorator( ...target as [any] );
+	}
+};
+
 /**
  * A method & class decorator factory that you can call by passing a {@link PolicyDescriptor}.
  * You can also call {@link Policy.usingGuard} to create a new {@link Policy} decorator that will always apply the given guards before checking.
@@ -50,27 +81,18 @@ export function Policy<TAbility extends AnyAbilityLike>( this: unknown, policy: 
 	const described = ( ( ...args: Parameters<MethodDecorator | ClassDecorator> ) => {
 		const guards: GuardsList = Reflect.getMetadata( guardsList, described ) ?? [];
 		if( args.length === 3 ){
-			const propLabel = `${String( ( args[0] as any ).name )}#${String( args[1] )}`;
+			const propLabel = `${String( ( args[0] as any )?.name )}#${String( args[1] )}`;
 			if( !args[0] || !args[2] ){
-				throw new Error( `Invalid bind on ${propLabel}` );
+				throw new TypeError( `Invalid bind on ${propLabel}` );
 			} else if( typeof args[2].value !== 'function' ){
-				throw new Error( `${propLabel} is not a method` );
+				throw new TypeError( `${propLabel} is not a method` );
 			}
-			addPolicyMetadata( policy )( args[2].value );
+			applyPolicyGuards( policy, args[2].value, guards, args );
 		} else if( args.length === 1 ){
-			addPolicyMetadata( policy )( args[0] );
+			applyPolicyGuards( policy, args[0], guards, args );
 		} else {
 			throw new RangeError( 'Invalid call arguments' );
 		}
-		const guardsDecorators = guards.map( g => UseGuards( ...( isArray( g ) ?
-			g.length > 1 ?
-				[ orGuard( g ) ] :
-				g :
-			[ g ] ) ) );
-		const fullDecorator = applyDecorators(
-			...guardsDecorators,
-			UseGuards( PoliciesGuard ) );
-		fullDecorator( ...args as [any] );
 	} ) as BoundPolicy<TAbility>;
 	described.usingGuard = ( ...guards ) => {
 		const oldGuardsList: GuardsList = Reflect.getMetadata( guardsList, described ) ?? [];

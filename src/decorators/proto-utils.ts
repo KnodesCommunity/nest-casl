@@ -8,7 +8,7 @@ export const CHECK_POLICIES_KEY = Symbol( 'check_policy' );
 export const addPolicyMetadata = <TAbility extends AnyAbilityLike>( metadataValue: PolicyDescriptor<TAbility> ): any =>
 	( target: any ) => {
 		const metadata: Array<PolicyDescriptor<TAbility>> = Reflect.getMetadata( CHECK_POLICIES_KEY, target ) ?? [];
-		metadata.unshift( metadataValue );
+		metadata.push( metadataValue );
 		Reflect.defineMetadata( CHECK_POLICIES_KEY, metadata, target );
 	};
 

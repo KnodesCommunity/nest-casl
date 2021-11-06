@@ -1,36 +1,61 @@
 {
   "name": "@scitizen/nest-casl",
-  "version": "0.0.1",
+  "version": "0.0.2-next.7",
   "description": "A module for managing authorization in your nest application, using casl.",
   "license": "MIT",
   "engines": {
     "node": ">= 14.18.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Scitizen/nest-casl.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Scitizen/nest-casl/issues"
+  },
   "author": "GerkinDev",
   "main": "dist/index.js",
+  "files": [
+    "src",
+    "dist"
+  ],
   "scripts": {
     "build": "nest build",
     "build:watch": "npm run build -- --watch",
     "doc": "typedoc",
+    "doc:update-peer-deps": "node docs-source/plugin/peer-deps-list.js",
     "format:pkg": "format-package --write",
     "lint": "eslint \"{,{src,test}/**/}*.{j,t}s\"",
     "lint:commit-message:current": "commitlint -E HUSKY_GIT_PARAMS",
     "lint:fix": "npm run lint -- --fix",
+    "lint:quick": "npm run lint -- --cache",
     "postinstall": "npm run postinstall:jest-extended",
     "postinstall:jest-extended": "cd node_modules/jest-extended && npm i --production --ignore-scripts",
-    "precommit": "npm run lint && npm run test && npm run test:e2e && npm run build && npm run doc",
+    "precommit": "npm run lint:quick && npm run test:unit:quick && npm run test:e2e:quick && npm run build && npm run doc && (git checkout HEAD docs || :)",
     "prepare": "husky install",
-    "release": "standard-version",
-    "test": "jest",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "release:do": "standard-version -a",
+    "release:trigger": "git commit --allow-empty -m \"ci(release): trigger release\"",
+    "release:trigger:alpha": "git commit --allow-empty -m \"ci(release): trigger alpha release\"",
     "test:e2e": "jest --config ./jest.config.e2e.js",
-    "test:watch": "jest --watch"
+    "test:e2e:ci": "JEST_JUNIT_OUTPUT_NAME=junit.e2e.xml npm run test:e2e -- --all --ci --reporters=default --reporters=jest-junit",
+    "test:e2e:quick": "npm run test:e2e -- --only-changed",
+    "test:unit": "jest --config ./jest.config.js",
+    "test:unit:ci": "JEST_JUNIT_OUTPUT_NAME=junit.unit.xml npm run test:unit -- --all --ci --coverage --reporters=default --reporters=jest-junit",
+    "test:unit:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand --config ./jest.config.js -- ",
+    "test:unit:quick": "npm run test:unit -- --only-changed"
   },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
     ]
+  },
+  "standard-version": {
+    "releaseCommitMessageFormat": "chore(release): {{currentTag}}\n\n[skip ci]",
+    "scripts": {
+      "postbump": "echo $(node -e \"console.log('v' + require('./package.json').version)\") > ./VERSION",
+      "postchangelog": "npm run doc:update-peer-deps && npm run doc -- --gitRevision $(cat ./VERSION)",
+      "precommit": "git add --force docs README.md"
+    }
   },
   "peerDependencies": {
     "@casl/ability": "^5.0.0",
@@ -68,12 +93,15 @@
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "eslint-plugin-rxjs": "^3.3.7",
     "eslint-plugin-sort-export-all": "^1.1.1",
+    "expect": "^27.2.4",
     "expect-type": "^0.12.0",
     "express": "^4.17.1",
     "format-package": "^6.1.0",
     "husky": "^7.0.2",
     "jest": "^27.2.4",
     "jest-extended": "github:GerkinDev/jest-extended#build/rejects-toThrowWithMessage",
+    "jest-junit": "^13.0.0",
+    "jest-matcher-utils": "^27.2.4",
     "lodash": "^4.17.21",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",

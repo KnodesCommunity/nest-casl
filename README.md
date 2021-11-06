@@ -1,73 +1,124 @@
+# @scitizen/nest-casl
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
+	<a href="http://nestjs.com/" target="_blank"><img src="https://nestjs.com/img/logo-small.svg" height="150" alt="Nest Logo" /></a>
+	<span style="font-size: 150px">&nbsp;+&nbsp;</span>
+	<a href="https://casl.js.org/v5/en" target="_blank"><img src="https://casl.js.org/v5/51b9cc103e05f66c.png" height="150" alt="CASL Logo"></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+<p align="center">A simple decorator-based way to check <a href="https://casl.js.org/v5/en" target="_blank">CASL abilities</a> on <a href="http://nestjs.com/" target="_blank">NestJS</a> controllers.</p>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
+<p align="center">
+	<a href="https://github.com/Scitizen/nest-casl/issues" target="_blank"><img src="https://img.shields.io/github/issues/Scitizen/nest-casl" alt="GitHub issues" /></a>
+	<a href="https://www.npmjs.com/package/@scitizen/nest-casl" target="_blank"><img src="https://img.shields.io/npm/v/@scitizen/nest-casl.svg" alt="NPM version" /></a>
+	<a href="https://www.npmjs.com/package/@scitizen/nest-casl" target="_blank"><img src="https://img.shields.io/npm/dm/@scitizen/nest-casl.svg" alt="NPM downloads" /></a>
+	<a href="https://www.npmjs.com/package/@scitizen/nest-casl" target="_blank"><img src="https://img.shields.io/npm/l/@scitizen/nest-casl.svg" alt="License" /></a>
+	<a href="https://circleci.com/gh/Scitizen/nest-casl/tree/main" target="_blank"><img src="https://img.shields.io/circleci/build/github/Scitizen/nest-casl/main" alt="CircleCI" /></a>
+	<a href="https://codeclimate.com/github/Scitizen/nest-casl/maintainability"><img src="https://api.codeclimate.com/v1/badges/21cc8f69c9eac8d36aa9/maintainability" alt="CodeClimate maintainability" /></a>
+	<a href="https://codeclimate.com/github/Scitizen/nest-casl/test_coverage"><img src="https://api.codeclimate.com/v1/badges/21cc8f69c9eac8d36aa9/test_coverage" alt="CodeClimate test coverage" /></a>
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Use decorators everywhere to protect your controller methods.
+
+* [:book: Read the docs](https://scitizen.github.io/nest-casl/)
+* [:rocket: Get started](https://scitizen.github.io/nest-casl/pages/Guides/getting-started.html)
 
 ## Installation
 
 ```bash
-$ npm install
+npm install --save @scitizen/nest-casl
 ```
 
-## Running the app
+Additionally, please make sure you have correct peer dependencies installed:
 
-```bash
-# development
-$ npm run start
+<!-- PEER DEPS -->
+* [@casl/ability](https://www.npmjs.com/package/@casl/ability): `^5.0.0`
+* [@nestjs/common](https://www.npmjs.com/package/@nestjs/common): `^8.0.0`
+* [@nestjs/core](https://www.npmjs.com/package/@nestjs/core): `^8.0.0`
+* [lodash](https://www.npmjs.com/package/lodash): `^4.17.0`
+* [reflect-metadata](https://www.npmjs.com/package/reflect-metadata): `^0.1.13`
+* [rxjs](https://www.npmjs.com/package/rxjs): `^7.0.0`
 
-# watch mode
-$ npm run start:dev
+```sh
+npm install @casl/ability@^5.0.0 @nestjs/common@^8.0.0 @nestjs/core@^8.0.0 lodash@^4.17.0 reflect-metadata@^0.1.13 rxjs@^7.0.0
+```
+<!-- END PEER DEPS -->
 
-# production mode
-$ npm run start:prod
+## In a nutshell
+
+Declare a new service that converts the user of your request to a *CASL ability*:
+
+```ts
+import { Injectable } from '@nestjs/common';
+import { AbilityBuilder, PureAbility } from '@casl/ability';
+import { CaslAbilityFactory } from '@scitizen/nest-casl';
+
+@Injectable()
+export class AbilityFactory implements CaslAbilityFactory {
+	// Here, `request` is the express or fastify request. You might get infos from it.
+	public createFromRequest( _request: unknown ): PureAbility {
+		const abilityBuilder = new AbilityBuilder( PureAbility );
+		abilityBuilder.can( 'feed', 'cat' );
+		abilityBuilder.can( 'hug', 'cat' );
+		abilityBuilder.can( 'pet', 'cat' );
+		abilityBuilder.cannot( 'rename', 'cat' );
+		return abilityBuilder.build();
+	}
+}
 ```
 
-## Test
+Import the module:
 
-```bash
-# unit tests
-$ npm run test
+```ts
+import { Module } from '@nestjs/common';
+import { CaslModule } from '@scitizen/nest-casl';
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+@Module( {
+	imports: [
+		CaslModule.withConfig( ( { abilityFactory: AbilityFactory } ) ),
+		// ....
+	],
+} )
+export class AppModule {}
 ```
 
-## Support
+Use decorators in your controller:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```ts
+import { AbilityBuilder, PureAbility } from '@casl/ability';
+import { Controller, Get } from '@nestjs/common';
+import { InjectAbility, PoliciesMask, Policy } from '@scitizen/nest-casl';
 
-## Stay in touch
+@Controller( '/cat/care' )
+@PoliciesMask({
+	'pet': { action: 'pet', subject: 'cat' }
+})
+export class CatCareController {
+	// Okay, you can feed.
+	@Get( 'feed' )
+	@Policy( { action: 'feed', subject: 'cat' } )
+	public feed(){
+		// ...
+	}
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+	// Well, I guess he won't bite.
+	@Get( 'hug' )
+	@Policy( { action: 'hug', subject: 'cat' } )
+	public hug(){
+		// ...
+	}
+
+	@Get( 'pet' )
+	public pet( @InjectAbility() ability: PureAbility ){
+		// ...
+	}
+}
+```
+
+For more details and usage with **guards**, please refer to the [guide](https://scitizen.github.io/nest-casl/pages/Guides/getting-started.html).
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+@scitizen/nest-casl is [MIT licensed](LICENSE).

@@ -1,8 +1,47 @@
 import { CanActivate, ExecutionContext, Injectable, Type } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { Observable, catchError, dematerialize, filter, first, from, materialize, of, shareReplay, switchMap, takeLast, throwError } from 'rxjs';
+
+import { anyToPromise } from './utils';
 
 const isGuard = ( v: any ): v is CanActivate => typeof v === 'object' && v && 'canActivate' in v;
+
+const canActivateGuardToPromise = ( guard: CanActivate, context: ExecutionContext ) => anyToPromise( () => {
+	const canActivate = guard.canActivate( context );
+	if( typeof canActivate !== 'boolean' &&
+		!( 'then' in canActivate ) &&
+		!( 'pipe' in canActivate ) ){
+		throw new TypeError( `Can't handle type of "canActivate" return "${canActivate}" for guard ${guard.constructor?.name ?? guard}` );
+	}
+	return canActivate;
+} );
+
+type GuardResult = {error: Error} | {value: boolean} | null;
+const handleGuardsFailed = ( firstRes: GuardResult ) => {
+	if( !firstRes ){
+		throw new TypeError( 'No first result' );
+	} else if( 'error' in firstRes ) {
+		throw firstRes.error;
+	} else {
+		return firstRes.value;
+	}
+};
+
+export const mergeGuardResults = async ( guards: readonly CanActivate[], context: ExecutionContext ): Promise<boolean> => {
+	let firstRes: GuardResult = null;
+	for( const guard of guards ){
+		try {
+			const ret = await canActivateGuardToPromise( guard, context );
+			if( ret ){
+				return true;
+			}
+			firstRes = firstRes ?? { value: ret };
+		} catch( e: any ) {
+			firstRes = firstRes ?? { error: e };
+		}
+	}
+
+	return handleGuardsFailed( firstRes );
+};
 
 export const orGuard = ( guards: Array<Type<CanActivate> | string | symbol | CanActivate> ): Type<CanActivate> => {
 	@Injectable()
@@ -13,50 +52,11 @@ export const orGuard = ( guards: Array<Type<CanActivate> | string | symbol | Can
 		 * Run all closure {@link guards} and check if at least one passed. Otherwise, returns the first `false` or exception.
 		 *
 		 * @param context - The execution context.
-		 * @returns an observable emitting `true` if at least one child guard returned `true`.
+		 * @returns a promise resolving `true` if at least one child guard returned `true`. If all guards fails, the first value or error is returned.
 		 */
-		public canActivate( context: ExecutionContext ): Observable<boolean> {
+		public canActivate( context: ExecutionContext ): Promise<boolean> {
 			const guardsResolved = guards.map( g => isGuard( g ) ? g : this._moduleRef.get( g, { strict: false } ) );
-			const resolutions = of( ...guardsResolved )
-				.pipe(
-					switchMap( g => this._canActivateChildGuard( g, context )
-						.pipe( takeLast( 1 ), materialize(), filter( m => m.kind !== 'C' ) ) ),
-					shareReplay() );
-			return resolutions
-				.pipe(
-					first( n => n.kind === 'N' && n.value ),
-					catchError( err => {
-						if( err.name === 'EmptyError' ){
-							return resolutions.pipe( first() );
-						}
-						return resolutions
-							.pipe( filter( n => n.kind !== 'N' || ( n.kind === 'N' && !n.value ) ) );
-					} ),
-					dematerialize() );
-		}
-
-		/**
-		 * Run the given {@link guard} using the given {@link context}, and normalize its return to an observable.
-		 *
-		 * @param guard - The guard to run.
-		 * @param context - The execution context.
-		 * @returns an observable emitting `true` if access is allowed, or `false` or throw an error otherwise.
-		 */
-		private _canActivateChildGuard( guard: CanActivate, context: ExecutionContext ): Observable<boolean> {
-			try {
-				const canActivate = guard.canActivate( context );
-				if( typeof canActivate === 'boolean' ){
-					return of( canActivate );
-				} else if( 'then' in canActivate ){
-					return from( canActivate );
-				} else if( 'pipe' in canActivate ){
-					return canActivate;
-				} else {
-					throw new TypeError( `Can't handle type of "canActivate" return "${canActivate}" for guard ${guard.constructor?.name ?? guard}` );
-				}
-			} catch( e ) {
-				return throwError( () => e as Error );
-			}
+			return mergeGuardResults( guardsResolved, context );
 		}
 	}
 	return OrGuard;

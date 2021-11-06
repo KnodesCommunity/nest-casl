@@ -33,4 +33,9 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 docs/
+junit*.xml
 coverage
+VERSION
+TEST_STATUS
+
+.eslintcache
