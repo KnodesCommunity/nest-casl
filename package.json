@@ -91,7 +91,7 @@
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-jsdoc": "^36.1.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "eslint-plugin-rxjs": "^3.3.7",
+    "eslint-plugin-rxjs": "^4.0.0",
     "eslint-plugin-sort-export-all": "^1.1.1",
     "expect": "^27.2.4",
     "expect-type": "^0.13.0",
