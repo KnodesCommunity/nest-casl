@@ -94,7 +94,7 @@
     "eslint-plugin-rxjs": "^3.3.7",
     "eslint-plugin-sort-export-all": "^1.1.1",
     "expect": "^27.2.4",
-    "expect-type": "^0.12.0",
+    "expect-type": "^0.13.0",
     "express": "^4.17.1",
     "format-package": "^6.1.0",
     "husky": "^7.0.2",
