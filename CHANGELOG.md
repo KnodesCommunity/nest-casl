@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3-next.1](https://github.com/Scitizen/nest-casl/compare/v0.0.3-next.0...v0.0.3-next.1) (2022-03-06)
+
 ### [0.0.3-next.0](https://github.com/Scitizen/nest-casl/compare/v0.0.2...v0.0.3-next.0) (2022-03-06)
 
 
