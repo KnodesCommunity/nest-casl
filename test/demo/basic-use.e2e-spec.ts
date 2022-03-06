@@ -3,7 +3,7 @@ import { Body, Controller, Get, HttpStatus, INestApplication, Injectable, Module
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 
-import { CaslAbilityFactory, CaslModule, PoliciesMask, Policy } from '@scitizen/nest-casl';
+import { CaslAbilityFactory, CaslModule, PoliciesMask, Policy } from '@knodes/nest-casl';
 
 // #region AbilityFactory
 @Injectable()

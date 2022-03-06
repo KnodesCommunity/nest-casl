@@ -12,7 +12,7 @@ module.exports = {
 		},
 	},
 	moduleNameMapper: {
-		'@scitizen/nest-casl': '<rootDir>/src',
+		'@knodes/nest-casl': '<rootDir>/src',
 	},
 	maxWorkers: 1,
 	// runner: 'jest-serial-runner', // Weird bug probably related to https://github.com/gabrieli/jest-serial-runner/issues/6

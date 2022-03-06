@@ -1,7 +1,7 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { Policy } from '@scitizen/nest-casl';
+import { Policy } from '@knodes/nest-casl';
 
 @Controller( '/passport/naive' )
 @Policy( { action: 'admin', subject: 'something' } ) // **MUST** be above the guard extracting infos from your request.

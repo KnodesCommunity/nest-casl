@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "paths": {
-      "@scitizen/nest-casl": [
+      "@knodes/nest-casl": [
         "./src/index.ts"
       ]
     },

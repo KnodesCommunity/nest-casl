@@ -23,7 +23,7 @@ module.exports = {
 		},
 	},
 	setupFilesAfterEnv: [
-		'jest-extended',
+		'jest-extended/all',
 		'./test/setup-jest.ts',
 	],
 };

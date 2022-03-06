@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 
-import { Policy } from '@scitizen/nest-casl';
+import { Policy } from '@knodes/nest-casl';
 
 import { NaiveGuard } from './naive.guard';
 

@@ -1,7 +1,7 @@
 import { AbilityBuilder, PureAbility } from '@casl/ability';
 import { Injectable } from '@nestjs/common';
 
-import { CaslAbilityFactory } from '@scitizen/nest-casl';
+import { CaslAbilityFactory } from '@knodes/nest-casl';
 
 import { MyAbility } from './ability';
 

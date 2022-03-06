@@ -1,7 +1,7 @@
 import { BadRequestException, CanActivate, Controller, ExecutionContext, Get, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { Policy } from '@scitizen/nest-casl';
+import { Policy } from '@knodes/nest-casl';
 
 // #region Recommended simple controller
 @Controller( '/recommended' )
