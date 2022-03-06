@@ -9,13 +9,13 @@
 <p align="center">A simple decorator-based way to check <a href="https://casl.js.org/v5/en" target="_blank">CASL abilities</a> on <a href="http://nestjs.com/" target="_blank">NestJS</a> controllers.</p>
 
 <p align="center">
-	<a href="https://github.com/Scitizen/nest-casl/issues" target="_blank"><img src="https://img.shields.io/github/issues/Scitizen/nest-casl" alt="GitHub issues" /></a>
+	<a href="https://github.com/KnodesCommunity/nest-casl/issues" target="_blank"><img src="https://img.shields.io/github/issues/KnodesCommunity/nest-casl" alt="GitHub issues" /></a>
 	<a href="https://www.npmjs.com/package/@knodes/nest-casl" target="_blank"><img src="https://img.shields.io/npm/v/@knodes/nest-casl.svg" alt="NPM version" /></a>
 	<a href="https://www.npmjs.com/package/@knodes/nest-casl" target="_blank"><img src="https://img.shields.io/npm/dm/@knodes/nest-casl.svg" alt="NPM downloads" /></a>
 	<a href="https://www.npmjs.com/package/@knodes/nest-casl" target="_blank"><img src="https://img.shields.io/npm/l/@knodes/nest-casl.svg" alt="License" /></a>
-	<a href="https://circleci.com/gh/Scitizen/nest-casl/tree/main" target="_blank"><img src="https://img.shields.io/circleci/build/github/Scitizen/nest-casl/main" alt="CircleCI" /></a>
-	<a href="https://codeclimate.com/github/Scitizen/nest-casl/maintainability"><img src="https://api.codeclimate.com/v1/badges/21cc8f69c9eac8d36aa9/maintainability" alt="CodeClimate maintainability" /></a>
-	<a href="https://codeclimate.com/github/Scitizen/nest-casl/test_coverage"><img src="https://api.codeclimate.com/v1/badges/21cc8f69c9eac8d36aa9/test_coverage" alt="CodeClimate test coverage" /></a>
+	<a href="https://circleci.com/gh/KnodesCommunity/nest-casl/tree/main" target="_blank"><img src="https://img.shields.io/circleci/build/github/KnodesCommunity/nest-casl/main" alt="CircleCI" /></a>
+	<a href="https://codeclimate.com/github/KnodesCommunity/nest-casl/maintainability"><img src="https://api.codeclimate.com/v1/badges/21cc8f69c9eac8d36aa9/maintainability" alt="CodeClimate maintainability" /></a>
+	<a href="https://codeclimate.com/github/KnodesCommunity/nest-casl/test_coverage"><img src="https://api.codeclimate.com/v1/badges/21cc8f69c9eac8d36aa9/test_coverage" alt="CodeClimate test coverage" /></a>
 </p>
 
 ## Description
@@ -117,7 +117,7 @@ export class CatCareController {
 }
 ```
 
-For more details and usage with **guards**, please refer to the [guide](https://scitizen.github.io/nest-casl/pages/Guides/getting-started.html).
+For more details and usage with **guards**, please refer to the [guide](https://KnodesCommunity.github.io/nest-casl/pages/Guides/getting-started.html).
 
 ## License
 

@@ -154,8 +154,8 @@ jobs:
       - run:
           name: Config git
           command: |
-            git config --global user.email "Scitizen-publish-bot@users.noreply.github.com"
-            git config --global user.name "Scitizen-publish-bot"
+            git config --global user.email "KnodesCommunity-publish-bot@users.noreply.github.com"
+            git config --global user.name "KnodesCommunity-publish-bot"
       - run: 
           name: Run standard-version
           command: |
@@ -191,8 +191,8 @@ jobs:
       - run:
           name: Config git
           command: |
-            git config --global user.email "Scitizen-publish-bot@users.noreply.github.com"
-            git config --global user.name "Scitizen-publish-bot"
+            git config --global user.email "KnodesCommunity-publish-bot@users.noreply.github.com"
+            git config --global user.name "KnodesCommunity-publish-bot"
       - run:
           name: Push branch & tag
           command: |
@@ -297,8 +297,8 @@ jobs:
       - run:
           name: Config git
           command: |
-            git config --global user.email "Scitizen-autosync-bot@users.noreply.github.com"
-            git config --global user.name "Scitizen-autosync-bot"
+            git config --global user.email "KnodesCommunity-autosync-bot@users.noreply.github.com"
+            git config --global user.name "KnodesCommunity-autosync-bot"
       - run:
           name: Merge to develop
           command: |

@@ -8,11 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Scitizen/nest-casl.git"
+    "url": "https://github.com/KnodesCommunity/nest-casl.git"
   },
   "bugs": {
-    "url": "https://github.com/Scitizen/nest-casl/issues"
+    "url": "https://github.com/KnodesCommunity/nest-casl/issues"
   },
+  "homepage": "https://knodescommunity.github.io/nest-casl/",
   "author": "GerkinDev",
   "main": "dist/index.js",
   "files": [
