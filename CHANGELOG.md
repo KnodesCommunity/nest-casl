@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3-next.0](https://github.com/Scitizen/nest-casl/compare/v0.0.2...v0.0.3-next.0) (2022-03-06)
+
+
+### Bug Fixes
+
+* change how injectable definition is done ([efd306a](https://github.com/Scitizen/nest-casl/commit/efd306aa8de7ccdf751f602023f008c0c2449e0f))
+
 ### [0.0.2](https://github.com/Scitizen/nest-casl/compare/v0.0.2-next.7...v0.0.2) (2021-11-06)
 
 ### [0.0.2-next.7](https://github.com/Scitizen/nest-casl/compare/v0.0.2-next.6...v0.0.2-next.7) (2021-10-08)
