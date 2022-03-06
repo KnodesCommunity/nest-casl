@@ -29,7 +29,7 @@ jobs:
             - v1--npm-ci
       - run: npm ci
       - save_cache:
-          key: v1--npm-ci-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: v1--npm-ci--{{ .Branch }}--{{ checksum "package-lock.json" }}
           paths:
             - ~/.npm
       - persist_to_workspace:
@@ -48,7 +48,7 @@ jobs:
             - v1--npm-i
       - run: npm install
       - save_cache:
-          key: v1--npm-i-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: v1--npm-i--{{ .Branch }}--{{ checksum "package-lock.json" }}
           paths:
             - ./node_mocules
       - persist_to_workspace:
@@ -93,13 +93,13 @@ jobs:
       - run:
           name: Unit tests
           command: |
-            npm run test:unit:ci
+            npm run test:ci
             echo $? > TEST_STATUS
           when: always
       - store_artifacts:
-          path: ./junit.unit.xml
+          path: ./junit.xml
       - store_test_results:
-          path: ./junit.unit.xml
+          path: ./junit.xml
       - store_artifacts:
           path: ./coverage
       - persist_to_workspace:
@@ -107,15 +107,6 @@ jobs:
           paths: 
             - coverage
             - TEST_STATUS
-
-      - run:
-          name: E2e tests
-          command: npm run test:e2e:ci
-          when: always
-      - store_artifacts:
-          path: ./junit.e2e.xml
-      - store_test_results:
-          path: ./junit.e2e.xml
   build:
     executor: node
     resource_class: small
@@ -142,6 +133,7 @@ jobs:
               curl --request POST \
                 --url https://circleci.com/api/v2/workflow/$CIRCLE_WORKFLOW_ID/cancel \
                 --header "Circle-Token: ${CIRCLE_TOKEN}"
+              echo 'NONE' > RELEASE_TYPE
             else
               bash ./scripts/ci/release-type.sh > RELEASE_TYPE
               echo "Should release $(cat ./RELEASE_TYPE)"
@@ -311,7 +303,7 @@ jobs:
           name: Merge to develop
           command: |
             git remote set-url origin https://$CIRCLE_PROJECT_USERNAME:$GITHUB_AUTH_SECRET@github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
-            git merge $CIRCLE_BRANCH develop -m "ci(auto-merge): auto merge $CIRCLE_BRANCH
+            git merge $CIRCLE_BRANCH origin/develop -m "ci(auto-merge): auto merge $CIRCLE_BRANCH
             
             [skip ci]"
             git push --set-upstream origin develop
@@ -322,7 +314,7 @@ jobs:
 workflows:
   renovate: # Workflow ran only on `renovate/*`
     when:
-      matches: { pattern: "^renovate/", value: << pipeline.git.branch >> }
+      matches: { pattern: "^renovate/.*$", value: << pipeline.git.branch >> }
     jobs:
       - npm-install
 
@@ -342,7 +334,7 @@ workflows:
       or:
         - equal: [ main, << pipeline.git.branch >> ]
         - equal: [ develop, << pipeline.git.branch >> ]
-        - matches: { pattern: "^renovate/", value: << pipeline.git.branch >> }
+        - matches: { pattern: "^renovate/.*$", value: << pipeline.git.branch >> }
     jobs:
       - npm-ci-install
       - codeclimate-before

@@ -36,7 +36,7 @@
     "release:trigger": "git commit --allow-empty -m \"ci(release): trigger release\"",
     "release:trigger:alpha": "git commit --allow-empty -m \"ci(release): trigger alpha release\"",
     "test": "jest --config ./jest.config.js",
-    "test:ci": "JEST_JUNIT_OUTPUT_NAME=junit.xml npm run test -- --all --ci --reporters=default --reporters=jest-junit",
+    "test:ci": "JEST_JUNIT_OUTPUT_NAME=junit.xml npm run test -- --all --ci --reporters=default --reporters=jest-junit --collectCoverage",
     "test:quick": "npm run test -- --only-changed"
   },
   "commitlint": {
