@@ -4,7 +4,7 @@ This page will show you the various way to do.
 
 Let's assume you have the following {@link CaslAbilityFactory `CaslAbilityFactory`}:
 
-{@codeblock test/use-with-guards/ability-factory.service.ts | src/ability-factory.service.ts}
+{@codeblock use-with-guards/ability-factory.service.ts | src/ability-factory.service.ts}
 
 # The naïve approach
 
@@ -14,7 +14,7 @@ Let's assume you have the following {@link CaslAbilityFactory `CaslAbilityFactor
 
 This method does not require any external dependency, and is as close to NestJS as possible.
 
-{@codeblock folded test/use-with-guards/naive.guard.ts | src/guards/naive.guard.ts}
+{@codeblock use-with-guards/naive.guard.ts folded | src/guards/naive.guard.ts}
 
 Assuming the guard does the following (see above for an example implementation):
 * Users without an `Authorization` header will see an `Unauthorized` exception.
@@ -23,7 +23,7 @@ Assuming the guard does the following (see above for an example implementation):
 
 > Yeah, I'm aware that in an ideal world, a [`Middleware`](https://docs.nestjs.com/middleware) or an [`Interceptor`](https://docs.nestjs.com/interceptors) should take care of setting the `user` property on the `Request`. But fact is that [`@nestjs/passport`](https://www.npmjs.com/package/@nestjs/passport) does it [in a guard](https://github.com/nestjs/passport/blob/6aef921c7566766d0eb9e79d2c8235177c539863/lib/auth.guard.ts#L58)
 
-{@codeblock test/use-with-guards/naive.controller.ts | src/controllers/naive.controller.ts}
+{@codeblock use-with-guards/naive.controller.ts | src/controllers/naive.controller.ts}
 
 Now,
 * Users without an `Authorization` header will see an `Unauthorized` exception (from the `NaiveGuard`).
@@ -35,17 +35,17 @@ Now,
 
 If you're using `passport`, you can delegate the user retrieval. Let's say you have a JWT `passport` strategy.
 
-{@codeblock folded test/use-with-guards/jwt-passport.strategy.ts | src/strategies/jwt-passport.strategy.ts}
+{@codeblock use-with-guards/jwt-passport.strategy.ts folded | src/strategies/jwt-passport.strategy.ts}
 
 Still using the naive approach, you can then declare the controller like this:
 
-{@codeblock test/use-with-guards/passport-naive.controller.ts | src/controllers/passport-naive.controller.ts}
+{@codeblock use-with-guards/passport-naive.controller.ts | src/controllers/passport-naive.controller.ts}
 
 ## The tests
 
 Wanna see the behavior as tests ? Here you are !
 
-{@codeblock folded test/use-with-guards/naive-test.e2e-spec.ts}
+{@codeblock use-with-guards/naive-test.e2e-spec.ts folded}
 
 # The recommended approach
 
@@ -57,17 +57,17 @@ What's the problem about the naïve approach above ? Well, there are 2.
 
 You can use {@link Policy.usingGuard `Policy.usingGuard`} or {@link PoliciesMask.usingGuard `PoliciesMask.usingGuard`} to prepended guards to the decorator factory. Those calls are cumulative, and you can do multiple subsequent calls to join guards using an `and` condition. If you provide an array of guards, they be evaluated using an `or` condition.
 
-{@codeblock test/use-with-guards/recommended.controller.ts#Recommended simple controller | src/controllers/recommended.controller.ts}
+{@codeblock use-with-guards/recommended.controller.ts#RecommendedSimpleController | src/controllers/recommended.controller.ts}
 
 ## About reusability
 
 You can even prepare a policy decorator with guards or {@link PolicyDescriptor `PolicyDescriptor`}:
 
-{@codeblock test/use-with-guards/recommended.controller.ts#Recommended bound | src/policies.ts}
+{@codeblock use-with-guards/recommended.controller.ts#RecommendedBound | src/policies.ts}
 
 Then, use those presets in your controller:
 
-{@codeblock test/use-with-guards/recommended.controller.ts#Recommended bound controller | src/recommended-bound.controller.ts}
+{@codeblock use-with-guards/recommended.controller.ts#RecommendedBoundController | src/recommended-bound.controller.ts}
 
 Now, both `method1` and `method2` will run if
 * the user is authenticated through `jwt` strategy
@@ -80,8 +80,8 @@ Now, both `method1` and `method2` will run if
 
 This is tested, of course. Just see by yourself.
 
-{@codeblock folded test/use-with-guards/recommended-test.e2e-spec.ts}
+{@codeblock folded use-with-guards/recommended-test.e2e-spec.ts}
 
 # What next ?
 
-{@page Better type constraints}
+{@page ./better-type-constraints.md}
