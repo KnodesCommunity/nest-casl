@@ -1,4 +1,4 @@
-import { Injectable, Type } from '@nestjs/common';
+import { Type } from '@nestjs/common';
 import { isObject } from 'lodash';
 import { Observable, lastValueFrom } from 'rxjs';
 
@@ -21,14 +21,4 @@ export const anyToPromise = <T>( fn: () => MaybeAsyncValue<T> ): Promise<T> => {
 	}
 };
 
-const SCOPE_OPTIONS_METADATA = ( () => {
-	@Injectable()
-	class FakeClass {}
-	const metaKeys = Reflect.getMetadataKeys( FakeClass );
-	if( metaKeys.length !== 1 ){
-		throw new Error( 'Your version of NestJS is incompatible with this package !' );
-	}
-	return metaKeys[0];
-} )();
-
-export const isInjectable = ( fn: Type<any> | ( ( ...args: any[] ) => any ) ): fn is Type<any> => Reflect.hasMetadata( SCOPE_OPTIONS_METADATA, fn );
+export const isInjectable = ( fn: Type<any> | ( ( ...args: any[] ) => any ) ): fn is Type<any> => Reflect.hasMetadata( '__injectable__', fn );

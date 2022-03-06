@@ -1,4 +1,4 @@
-# @scitizen/nest-casl
+# @knodes/nest-casl
 
 <p align="center">
 	<a href="http://nestjs.com/" target="_blank"><img src="https://nestjs.com/img/logo-small.svg" height="150" alt="Nest Logo" /></a>
@@ -9,26 +9,26 @@
 <p align="center">A simple decorator-based way to check <a href="https://casl.js.org/v5/en" target="_blank">CASL abilities</a> on <a href="http://nestjs.com/" target="_blank">NestJS</a> controllers.</p>
 
 <p align="center">
-	<a href="https://github.com/Scitizen/nest-casl/issues" target="_blank"><img src="https://img.shields.io/github/issues/Scitizen/nest-casl" alt="GitHub issues" /></a>
-	<a href="https://www.npmjs.com/package/@scitizen/nest-casl" target="_blank"><img src="https://img.shields.io/npm/v/@scitizen/nest-casl.svg" alt="NPM version" /></a>
-	<a href="https://www.npmjs.com/package/@scitizen/nest-casl" target="_blank"><img src="https://img.shields.io/npm/dm/@scitizen/nest-casl.svg" alt="NPM downloads" /></a>
-	<a href="https://www.npmjs.com/package/@scitizen/nest-casl" target="_blank"><img src="https://img.shields.io/npm/l/@scitizen/nest-casl.svg" alt="License" /></a>
-	<a href="https://circleci.com/gh/Scitizen/nest-casl/tree/main" target="_blank"><img src="https://img.shields.io/circleci/build/github/Scitizen/nest-casl/main" alt="CircleCI" /></a>
-	<a href="https://codeclimate.com/github/Scitizen/nest-casl/maintainability"><img src="https://api.codeclimate.com/v1/badges/21cc8f69c9eac8d36aa9/maintainability" alt="CodeClimate maintainability" /></a>
-	<a href="https://codeclimate.com/github/Scitizen/nest-casl/test_coverage"><img src="https://api.codeclimate.com/v1/badges/21cc8f69c9eac8d36aa9/test_coverage" alt="CodeClimate test coverage" /></a>
+	<a href="https://github.com/KnodesCommunity/nest-casl/issues" target="_blank"><img src="https://img.shields.io/github/issues/KnodesCommunity/nest-casl" alt="GitHub issues" /></a>
+	<a href="https://www.npmjs.com/package/@knodes/nest-casl" target="_blank"><img src="https://img.shields.io/npm/v/@knodes/nest-casl.svg" alt="NPM version" /></a>
+	<a href="https://www.npmjs.com/package/@knodes/nest-casl" target="_blank"><img src="https://img.shields.io/npm/dm/@knodes/nest-casl.svg" alt="NPM downloads" /></a>
+	<a href="https://www.npmjs.com/package/@knodes/nest-casl" target="_blank"><img src="https://img.shields.io/npm/l/@knodes/nest-casl.svg" alt="License" /></a>
+	<a href="https://circleci.com/gh/KnodesCommunity/nest-casl/tree/main" target="_blank"><img src="https://img.shields.io/circleci/build/github/KnodesCommunity/nest-casl/main" alt="CircleCI" /></a>
+	<a href="https://codeclimate.com/github/KnodesCommunity/nest-casl/maintainability"><img src="https://api.codeclimate.com/v1/badges/21cc8f69c9eac8d36aa9/maintainability" alt="CodeClimate maintainability" /></a>
+	<a href="https://codeclimate.com/github/KnodesCommunity/nest-casl/test_coverage"><img src="https://api.codeclimate.com/v1/badges/21cc8f69c9eac8d36aa9/test_coverage" alt="CodeClimate test coverage" /></a>
 </p>
 
 ## Description
 
 Use decorators everywhere to protect your controller methods.
 
-* [:book: Read the docs](https://scitizen.github.io/nest-casl/)
-* [:rocket: Get started](https://scitizen.github.io/nest-casl/pages/Guides/getting-started.html)
+* [:book: Read the docs](https://knodescommunity.github.io/nest-casl/)
+* [:rocket: Get started](https://knodescommunity.github.io/nest-casl/pages/Guides/getting-started.html)
 
 ## Installation
 
 ```bash
-npm install --save @scitizen/nest-casl
+npm install --save @knodes/nest-casl
 ```
 
 Additionally, please make sure you have correct peer dependencies installed:
@@ -53,7 +53,7 @@ Declare a new service that converts the user of your request to a *CASL ability*
 ```ts
 import { Injectable } from '@nestjs/common';
 import { AbilityBuilder, PureAbility } from '@casl/ability';
-import { CaslAbilityFactory } from '@scitizen/nest-casl';
+import { CaslAbilityFactory } from '@knodes/nest-casl';
 
 @Injectable()
 export class AbilityFactory implements CaslAbilityFactory {
@@ -73,7 +73,7 @@ Import the module:
 
 ```ts
 import { Module } from '@nestjs/common';
-import { CaslModule } from '@scitizen/nest-casl';
+import { CaslModule } from '@knodes/nest-casl';
 
 @Module( {
 	imports: [
@@ -89,7 +89,7 @@ Use decorators in your controller:
 ```ts
 import { AbilityBuilder, PureAbility } from '@casl/ability';
 import { Controller, Get } from '@nestjs/common';
-import { InjectAbility, PoliciesMask, Policy } from '@scitizen/nest-casl';
+import { InjectAbility, PoliciesMask, Policy } from '@knodes/nest-casl';
 
 @Controller( '/cat/care' )
 @PoliciesMask({
@@ -117,8 +117,8 @@ export class CatCareController {
 }
 ```
 
-For more details and usage with **guards**, please refer to the [guide](https://scitizen.github.io/nest-casl/pages/Guides/getting-started.html).
+For more details and usage with **guards**, please refer to the [guide](https://KnodesCommunity.github.io/nest-casl/pages/Guides/getting-started.html).
 
 ## License
 
-@scitizen/nest-casl is [MIT licensed](LICENSE).
+@knodes/nest-casl is [MIT licensed](LICENSE).

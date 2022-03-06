@@ -1,9 +1,9 @@
 import { BadRequestException, CanActivate, Controller, ExecutionContext, Get, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { Policy } from '@scitizen/nest-casl';
+import { Policy } from '@knodes/nest-casl';
 
-// #region Recommended simple controller
+// #region RecommendedSimpleController
 @Controller( '/recommended' )
 @Policy( { action: 'admin', subject: 'something' } )
 	.usingGuard( AuthGuard( 'jwt' ) ) // The policy will run the guard before doing its own checks.
@@ -15,13 +15,13 @@ export class RecommendedTestController {
 }
 // #endregion
 
-// #region Recommended bound
+// #region RecommendedBound
 export const AdminViaJwtPolicy = Policy( { action: 'admin', subject: 'something' } )
 	.usingGuard( AuthGuard( 'jwt' ) );
 export const ViaJwtPolicy = Policy.usingGuard( AuthGuard( 'jwt' ) );
 // #endregion
 
-// #region Recommended bound controller
+// #region RecommendedBoundController
 @Injectable()
 export class ExtraGuard1 implements CanActivate {
 	public canActivate( context: ExecutionContext ): boolean {

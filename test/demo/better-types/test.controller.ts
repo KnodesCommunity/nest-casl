@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 
-import { Policy } from '@scitizen/nest-casl';
+import { Policy } from '@knodes/nest-casl';
 
 import { MyAbility } from './ability';
 

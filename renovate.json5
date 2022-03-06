@@ -16,6 +16,14 @@
     { // `passport` is peer of `passport-jwt` & `@nestjs-passport`
       "matchPackagePatterns": ["passport", "passport-jwt"],
       "enabled": false
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    },
+    {
+      "matchDatasources": ["npm"],
+      "stabilityDays": 3
     }
   ]
 }

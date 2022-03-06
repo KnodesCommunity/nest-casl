@@ -2,7 +2,7 @@ const { resolve } = require( 'path' );
 
 module.exports = {
 	root: true,
-	extends: '@scitizen/eslint-config/nest',
+	extends: '@knodes/eslint-config/nest',
 	parserOptions: {
 		project: [ './tsconfig.src.json', './tsconfig.spec.json', './tsconfig.e2e-spec.json' ]
 			.map( tsconfig => resolve( __dirname, tsconfig ) ),

@@ -1,4 +1,4 @@
-module.exports = {
+const baseConfig = {
 	preset: 'ts-jest',
 	collectCoverageFrom: [
 		'src/**/*.(t|j)s',
@@ -23,7 +23,39 @@ module.exports = {
 		},
 	},
 	setupFilesAfterEnv: [
-		'jest-extended',
+		'jest-extended/all',
 		'./test/setup-jest.ts',
+	],
+};
+
+module.exports = {
+	projects: [
+		{
+			...baseConfig,
+			displayName: {
+				name: 'unit',
+				color: 'blue',
+			},
+		},
+		{
+			...baseConfig,
+			coverageDirectory: undefined,
+			collectCoverage: false,
+			testMatch: [ '<rootDir>/test/**/*.e2e-spec.ts' ],
+			globals: {
+				'ts-jest': {
+					...baseConfig.globals[ 'ts-jest' ],
+					tsconfig: './tsconfig.e2e-spec.json',
+				},
+			},
+			moduleNameMapper: {
+				'@knodes/nest-casl': '<rootDir>/src',
+			},
+			maxWorkers: 1,
+			displayName: {
+				name: 'e2e',
+				color: 'red',
+			},
+		},
 	],
 };

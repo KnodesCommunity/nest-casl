@@ -3,7 +3,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 
-import { CaslModule } from '@scitizen/nest-casl';
+import { CaslModule } from '@knodes/nest-casl';
 
 import { AbilityFactory } from './ability-factory.service';
 import { JwtPassportStrategy } from './jwt-passport.strategy';

@@ -4,11 +4,11 @@ So far, we were able to configure your policies. But we can't yet check that our
 
 Let's configure our ability types:
 
-{@codeblock test/better-types/ability.ts}
+{@codeblock better-types/ability.ts}
 
 Using `MyAbility`, we can't pass anything to `can` or `cannot`: types are constrained.
 
-{@codeblock test/better-types/ability.typecheck.e2e-spec.ts}
+{@codeblock better-types/ability.typecheck.e2e-spec.ts}
 
 That's great. This will greatly reduce our chances of typos. Moreover, your IDE might now suggest `action`s & `subject`s for you.
 
@@ -18,18 +18,18 @@ That's great. This will greatly reduce our chances of typos. Moreover, your IDE 
 
 Let's now use this type in your {@link CaslAbilityFactory `CaslAbilityFactory`}:
 
-{@codeblock test/better-types/ability-factory.service.ts | src/ability-factory.service.ts}
+{@codeblock better-types/ability-factory.service.ts | src/ability-factory.service.ts}
 
 ## With decorators
 
 You can pass your ability as a type parameter to your decorators to constraint your `action`s and `subject`s:
 
-{@codeblock test/better-types/test.controller.ts | src/test.controller.ts}
+{@codeblock better-types/test.controller.ts | src/test.controller.ts}
 
 But the boring part here is that you have to pass your ability type to **every** decorator in order to constrain them. Hopefully, you can solve this:
 
-{@codeblock test/better-types/my-policies.ts | src/my-policies.ts}
+{@codeblock better-types/my-policies.ts | src/my-policies.ts}
 
 Then, simply enjoy type contraints !
 
-{@codeblock test/better-types/test-bound.controller.ts | src/test-bound.controller.ts}
+{@codeblock better-types/test-bound.controller.ts | src/test-bound.controller.ts}

@@ -1,4 +1,4 @@
-import { bindPolicyDecorators } from '@scitizen/nest-casl';
+import { bindPolicyDecorators } from '@knodes/nest-casl';
 
 import { MyAbility } from './ability';
 
