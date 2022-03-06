@@ -70,24 +70,41 @@ export class PoliciesGuard<TAbility extends AnyAbilityLike = PureAbility<any, an
 	}
 
 	/**
-	 * Check if the policy matches the current request's ability.
+	 * Check if the given descriptor is injectable or a provider token, and return a real policy.
 	 *
-	 * @param policy - The policy descriptor.
+	 * @param policyDescriptor - The descriptor to resolve.
+	 * @returns the injected policy, or the policy value if it was not injectable.
+	 */
+	private _getPolicyFromDescriptor( policyDescriptor: PolicyDescriptor<TAbility> ){
+		if (
+			// Class providers
+			( typeof policyDescriptor === 'function' && isInjectable( policyDescriptor ) ) ||
+			// Token providers
+			typeof policyDescriptor === 'string' || typeof policyDescriptor === 'symbol'
+		) {
+			return this._moduleRef.get( policyDescriptor );
+		} else {
+			return policyDescriptor;
+		}
+	}
+
+	/**
+	 * Check if the policy descriptor matches the current request's ability.
+	 *
+	 * @param policyDescriptor - The policy descriptor.
 	 * @param ability - The request's ability.
 	 * @returns `true` if allowed, `false` otherwise.
 	 */
-	private _execPolicyHandler( policy: PolicyDescriptor<TAbility>, ability: TAbility ) {
-		const injectedPolicy = ( typeof policy === 'function' && isInjectable( policy ) ) || typeof policy === 'string' || typeof policy === 'symbol' ?
-			this._moduleRef.get( policy ) :
-			policy;
-		if( typeof injectedPolicy === 'boolean' ) {
-			return injectedPolicy;
-		} else if( typeof injectedPolicy === 'function' ){
-			return injectedPolicy( ability );
-		} else if( injectedPolicy && 'action' in injectedPolicy && 'subject' in injectedPolicy ){
-			return ability.can( injectedPolicy.action, injectedPolicy.subject );
-		} else if( injectedPolicy && 'handle' in injectedPolicy ){
-			return injectedPolicy.handle( ability );
+	private _execPolicyHandler( policyDescriptor: PolicyDescriptor<TAbility>, ability: TAbility ) {
+		const policy = this._getPolicyFromDescriptor( policyDescriptor );
+		if( typeof policy === 'boolean' ) {
+			return policy;
+		} else if( typeof policy === 'function' ){
+			return policy( ability );
+		} else if( policy && 'action' in policy && 'subject' in policy ){
+			return ability.can( policy.action, policy.subject );
+		} else if( policy && 'handle' in policy ){
+			return policy.handle( ability );
 		} else {
 			throw new TypeError( 'Invalid handler type' );
 		}
