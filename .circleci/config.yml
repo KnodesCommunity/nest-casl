@@ -84,7 +84,7 @@ jobs:
           command: /tmp/cc-test-reporter after-build --coverage-input-type lcov --exit-code $(cat ./TEST_STATUS)
   test:
     executor: node
-    resource_class: small
+    resource_class: medium+
     steps:
       - attach_workspace:
           at: .
@@ -284,9 +284,9 @@ jobs:
           command: |
             release_type="$(cat ./RELEASE_TYPE)"
             if [ -z ${release_type} ]; then
-              npm publish
+              npm publish --access public
             else
-              npm publish --tag ${release_type}
+              npm publish --tag ${release_type} --access public
             fi
   git-merge-develop:
     executor: git
