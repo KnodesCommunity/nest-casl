@@ -304,7 +304,8 @@ jobs:
           command: |
             git remote set-url origin https://$CIRCLE_PROJECT_USERNAME:$GITHUB_AUTH_SECRET@github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
             git fetch origin
-            git merge $CIRCLE_BRANCH origin/develop -m "ci(auto-merge): auto merge $CIRCLE_BRANCH
+            git checkout develop
+            git merge $CIRCLE_BRANCH -m "ci(auto-merge): auto merge $CIRCLE_BRANCH
             
             [skip ci]"
             git push --set-upstream origin develop
@@ -325,15 +326,6 @@ workflows:
       - build:
           requires:
             - npm-install
-
-      - Confirm merge:
-          type: approval
-          requires:
-            - test
-            - build
-      - git-merge-develop:
-          requires:
-            - Confirm merge
   check: # Workflow ran on all branches except `main`, `develop` and `renovate/*`
     unless:
       or:
@@ -377,7 +369,7 @@ workflows:
       - check-releaseable:
           requires:
             - build
-            - test
+            - codeclimate-after
       - Confirm new release:
           type: approval
           requires:
