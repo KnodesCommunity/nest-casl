@@ -63,8 +63,8 @@
   },
   "devDependencies": {
     "@casl/ability": "^5.4.3",
-    "@commitlint/cli": "^16.2.3",
-    "@commitlint/config-conventional": "^16.2.1",
+    "@commitlint/cli": "^17.0.0",
+    "@commitlint/config-conventional": "^17.0.0",
     "@knodes/eslint-config": "^1.6.3",
     "@knodes/typedoc-plugin-code-blocks": "^0.22.3",
     "@knodes/typedoc-plugin-pages": "^0.22.3",
