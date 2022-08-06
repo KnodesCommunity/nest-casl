@@ -54,7 +54,7 @@
     }
   },
   "peerDependencies": {
-    "@casl/ability": "^5.0.0",
+    "@casl/ability": "^5.0.0 || ^6.0.0",
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
     "lodash": "^4.17.0",
@@ -62,7 +62,7 @@
     "rxjs": "^7.0.0"
   },
   "devDependencies": {
-    "@casl/ability": "^5.4.3",
+    "@casl/ability": "^6.0.0",
     "@commitlint/cli": "^17.0.0",
     "@commitlint/config-conventional": "^17.0.0",
     "@knodes/eslint-config": "^1.6.3",
