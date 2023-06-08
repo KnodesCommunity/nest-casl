@@ -98,7 +98,7 @@
     "format-package": "^7.0.0",
     "husky": "^8.0.0",
     "jest": "^27.5.1",
-    "jest-extended": "^3.0.0",
+    "jest-extended": "^4.0.0",
     "jest-junit": "^14.0.0",
     "jest-matcher-utils": "^27.5.1",
     "lodash": "^4.17.21",
