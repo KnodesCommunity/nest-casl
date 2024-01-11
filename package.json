@@ -68,7 +68,7 @@
     "@knodes/eslint-config": "^1.6.3",
     "@knodes/typedoc-plugin-code-blocks": "^0.23.0",
     "@knodes/typedoc-plugin-pages": "^0.23.0",
-    "@nestjs/cli": "^8.2.4",
+    "@nestjs/cli": "^10.0.0",
     "@nestjs/common": "^8.4.2",
     "@nestjs/core": "^8.4.2",
     "@nestjs/jwt": "^9.0.0",
